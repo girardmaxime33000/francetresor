@@ -1,0 +1,624 @@
+{
+ "generated_at": "2026-10-02T07:09:26+00:00",
+ "datasets": [
+  {
+   "id": "adjudications_oat",
+   "title": "Adjudications d'OAT moyen et long terme",
+   "files": {
+    "json": "adjudications_oat.json",
+    "csv": "adjudications_oat.csv"
+   },
+   "meta": {
+    "dataset": "adjudications_oat",
+    "title": "Adjudications d'OAT moyen et long terme",
+    "source_file": "2026-10_hist_mlt.xlsx",
+    "first_observation": "1999-01-07",
+    "last_observation": "2026-09-17",
+    "record_count": 2308,
+    "generated_at": "2026-10-02T07:09:26+00:00"
+   },
+   "variables": [
+    {
+     "id": "auction_type",
+     "label": "Type d'adjudication",
+     "unit": "",
+     "description": "adju_LT (long terme), adju_MT (moyen terme), adju_I (indexées), adju_MLT (moyen et long terme)."
+    },
+    {
+     "id": "auction_date",
+     "label": "Date d'adjudication",
+     "unit": "date",
+     "description": "Date de l'adjudication."
+    },
+    {
+     "id": "settlement_date",
+     "label": "Date de règlement",
+     "unit": "date",
+     "description": "Date de règlement-livraison."
+    },
+    {
+     "id": "offered_min",
+     "label": "Volume offert, minimum",
+     "unit": "M€",
+     "description": "Borne basse de la fourchette de volume offert."
+    },
+    {
+     "id": "offered_max",
+     "label": "Volume offert, maximum",
+     "unit": "M€",
+     "description": "Borne haute de la fourchette de volume offert."
+    },
+    {
+     "id": "isin",
+     "label": "Code ISIN",
+     "unit": "",
+     "description": "Identifiant international de la ligne."
+    },
+    {
+     "id": "line",
+     "label": "Ligne",
+     "unit": "",
+     "description": "Libellé de la ligne tel que publié dans la source."
+    },
+    {
+     "id": "bid_amount",
+     "label": "Volume des soumissions",
+     "unit": "M€",
+     "description": "Montant total des offres reçues."
+    },
+    {
+     "id": "amount_served",
+     "label": "Volume adjugé",
+     "unit": "M€",
+     "description": "Montant adjugé lors de l'adjudication."
+    },
+    {
+     "id": "bid_to_cover",
+     "label": "Ratio de couverture",
+     "unit": "",
+     "description": "Volume des soumissions rapporté au volume adjugé."
+    },
+    {
+     "id": "nct_amount",
+     "label": "ONC après adjudication",
+     "unit": "M€",
+     "description": "Offres non compétitives servies après l'adjudication."
+    },
+    {
+     "id": "total_issued",
+     "label": "Volume total émis",
+     "unit": "M€",
+     "description": "Volume adjugé et ONC."
+    },
+    {
+     "id": "weighted_rate",
+     "label": "Taux moyen pondéré",
+     "unit": "décimal",
+     "description": "Rendement moyen pondéré (0,0392 pour 3,92 %). Rendement réel pour les titres indexés. Absent pour les OAT TEC 10."
+    },
+    {
+     "id": "weighted_price",
+     "label": "Prix moyen pondéré",
+     "unit": "fraction du nominal",
+     "description": "0,9675 pour 96,75 % du pair."
+    },
+    {
+     "id": "index_ratio",
+     "label": "Coefficient d'indexation",
+     "unit": "",
+     "description": "Coefficient d'indexation à la date de règlement. Absent pour les titres nominaux."
+    },
+    {
+     "id": "instrument_family",
+     "label": "Famille d'instrument",
+     "unit": "",
+     "description": "Déduit de la ligne : OAT, OATi, OAT€i, BTAN, BTANi, BTAN€i, OAT TEC 10, OAT verte."
+    },
+    {
+     "id": "coupon",
+     "label": "Coupon",
+     "unit": "décimal",
+     "description": "Coupon annuel déduit de la ligne. Absent pour les OAT TEC 10."
+    },
+    {
+     "id": "maturity_date",
+     "label": "Date d'échéance",
+     "unit": "date",
+     "description": "Déduite de la ligne."
+    },
+    {
+     "id": "residual_maturity_years",
+     "label": "Maturité résiduelle à l'adjudication",
+     "unit": "années",
+     "description": "(date d'échéance − date d'adjudication) / 365,25."
+    },
+    {
+     "id": "index_type",
+     "label": "Indice d'indexation",
+     "unit": "",
+     "description": "inflation_france (OATi, BTANi) ou inflation_zone_euro (OAT€i, BTAN€i). Vide pour les titres nominaux."
+    },
+    {
+     "id": "line_label",
+     "label": "Libellé normalisé",
+     "unit": "",
+     "description": "Ligne avec virgule décimale."
+    }
+   ]
+  },
+  {
+   "id": "adjudications_btf",
+   "title": "Adjudications de BTF",
+   "files": {
+    "json": "adjudications_btf.json",
+    "csv": "adjudications_btf.csv"
+   },
+   "meta": {
+    "dataset": "adjudications_btf",
+    "title": "Adjudications de BTF",
+    "source_file": "2026-10_hist_btf.xlsx",
+    "first_observation": "1999-01-04",
+    "last_observation": "2026-09-28",
+    "record_count": 4067,
+    "generated_at": "2026-10-02T07:09:26+00:00"
+   },
+   "variables": [
+    {
+     "id": "auction_date",
+     "label": "Date d'adjudication",
+     "unit": "date",
+     "description": "Date de l'adjudication."
+    },
+    {
+     "id": "settlement_date",
+     "label": "Date de règlement",
+     "unit": "date",
+     "description": "Date de règlement-livraison."
+    },
+    {
+     "id": "term_weeks",
+     "label": "Durée",
+     "unit": "semaines",
+     "description": "Durée du BTF à l'émission."
+    },
+    {
+     "id": "maturity_date",
+     "label": "Date d'échéance",
+     "unit": "date",
+     "description": "Date d'échéance du BTF."
+    },
+    {
+     "id": "offered_min",
+     "label": "Volume offert, minimum",
+     "unit": "M€",
+     "description": "Borne basse de la fourchette de volume offert."
+    },
+    {
+     "id": "offered_max",
+     "label": "Volume offert, maximum",
+     "unit": "M€",
+     "description": "Borne haute de la fourchette de volume offert."
+    },
+    {
+     "id": "isin",
+     "label": "Code ISIN",
+     "unit": "",
+     "description": "Identifiant international de la ligne."
+    },
+    {
+     "id": "bid_amount",
+     "label": "Volume des soumissions",
+     "unit": "M€",
+     "description": "Montant total des offres reçues."
+    },
+    {
+     "id": "amount_served",
+     "label": "Volume adjugé",
+     "unit": "M€",
+     "description": "Montant adjugé lors de l'adjudication."
+    },
+    {
+     "id": "bid_to_cover",
+     "label": "Ratio de couverture",
+     "unit": "",
+     "description": "Volume des soumissions rapporté au volume adjugé."
+    },
+    {
+     "id": "nct_amount",
+     "label": "ONC après adjudication",
+     "unit": "M€",
+     "description": "Offres non compétitives servies après l'adjudication."
+    },
+    {
+     "id": "total_issued",
+     "label": "Volume total émis",
+     "unit": "M€",
+     "description": "Volume adjugé et ONC."
+    },
+    {
+     "id": "weighted_rate",
+     "label": "Taux moyen pondéré",
+     "unit": "décimal",
+     "description": "Taux moyen pondéré (0,0302 pour 3,02 %)."
+    },
+    {
+     "id": "segment",
+     "label": "Segment",
+     "unit": "",
+     "description": "3 mois (15 semaines ou moins), 6 mois (16 à 30 semaines), 12 mois (31 semaines ou plus)."
+    }
+   ]
+  },
+  {
+   "id": "syndications",
+   "title": "Syndications",
+   "files": {
+    "json": "syndications.json",
+    "csv": "syndications.csv"
+   },
+   "meta": {
+    "dataset": "syndications",
+    "title": "Syndications",
+    "source_file": "1999-2026_historique_syndications.xlsx",
+    "first_observation": "1999-10-01",
+    "last_observation": "2026-04-21",
+    "record_count": 45,
+    "generated_at": "2026-10-02T07:09:26+00:00"
+   },
+   "variables": [
+    {
+     "id": "syndication_type",
+     "label": "Type de syndication",
+     "unit": "",
+     "description": "synd_LT (long terme), synd_I (indexées)."
+    },
+    {
+     "id": "settlement_date",
+     "label": "Date de règlement",
+     "unit": "date",
+     "description": "Date de règlement-livraison."
+    },
+    {
+     "id": "maturity_year",
+     "label": "Année d'échéance",
+     "unit": "année",
+     "description": "Année d'échéance de la ligne."
+    },
+    {
+     "id": "isin",
+     "label": "Code ISIN",
+     "unit": "",
+     "description": "Identifiant international de la ligne."
+    },
+    {
+     "id": "line",
+     "label": "Ligne",
+     "unit": "",
+     "description": "Libellé de la ligne tel que publié dans la source."
+    },
+    {
+     "id": "amount",
+     "label": "Volume émis ou racheté",
+     "unit": "M€",
+     "description": "Positif pour une émission, négatif pour un rachat effectué dans le cadre d'une opération d'échange."
+    },
+    {
+     "id": "weighted_rate",
+     "label": "Taux moyen pondéré",
+     "unit": "décimal",
+     "description": "Rendement moyen pondéré."
+    },
+    {
+     "id": "weighted_price",
+     "label": "Prix moyen pondéré",
+     "unit": "fraction du nominal",
+     "description": "Prix moyen pondéré."
+    },
+    {
+     "id": "index_ratio",
+     "label": "Coefficient d'indexation",
+     "unit": "",
+     "description": "Coefficient d'indexation à la date de règlement. Absent pour les titres nominaux."
+    },
+    {
+     "id": "operation",
+     "label": "Nature de l'opération",
+     "unit": "",
+     "description": "emission ou rachat, déduite du signe du volume."
+    },
+    {
+     "id": "instrument_family",
+     "label": "Famille d'instrument",
+     "unit": "",
+     "description": "Déduit de la ligne."
+    },
+    {
+     "id": "coupon",
+     "label": "Coupon",
+     "unit": "décimal",
+     "description": "Coupon annuel déduit de la ligne."
+    },
+    {
+     "id": "maturity_date",
+     "label": "Date d'échéance",
+     "unit": "date",
+     "description": "Déduite de la ligne."
+    },
+    {
+     "id": "line_label",
+     "label": "Libellé normalisé",
+     "unit": "",
+     "description": "Ligne avec virgule décimale."
+    }
+   ]
+  },
+  {
+   "id": "point_mort_inflation",
+   "title": "Point mort d'inflation à 10 ans",
+   "files": {
+    "json": "point_mort_inflation.json",
+    "csv": "point_mort_inflation.csv"
+   },
+   "meta": {
+    "dataset": "point_mort_inflation",
+    "title": "Point mort d'inflation à 10 ans",
+    "source_file": "2026_10_01_point_mort_inflation_oati.xls",
+    "first_observation": "2019-03-05",
+    "last_observation": "2026-10-01",
+    "record_count": 1978,
+    "generated_at": "2026-10-02T07:09:26+00:00",
+    "series_label": "Point-mort inflation FR 10 ans (Ecart rendement : OAT 05/36 - OATi 03/36)"
+   },
+   "variables": [
+    {
+     "id": "date",
+     "label": "Date",
+     "unit": "date",
+     "description": "Jour ouvré d'observation."
+    },
+    {
+     "id": "breakeven",
+     "label": "Point mort d'inflation à 10 ans",
+     "unit": "décimal",
+     "description": "Écart de rendement OAT 05/36 − OATi 03/36 (0,02024 pour 202,4 pb)."
+    },
+    {
+     "id": "breakeven_bp",
+     "label": "Point mort d'inflation à 10 ans",
+     "unit": "points de base",
+     "description": "Même valeur en points de base."
+    }
+   ]
+  },
+  {
+   "id": "reference_inflation",
+   "title": "Référence quotidienne d'inflation",
+   "files": {
+    "json": "reference_inflation.json",
+    "csv": "reference_inflation.csv"
+   },
+   "meta": {
+    "dataset": "reference_inflation",
+    "title": "Référence quotidienne d'inflation",
+    "source_file": "2026-09_coef_oati-novembre26.xls",
+    "first_observation": "1998-07-25",
+    "last_observation": "2026-11-01",
+    "record_count": 10327,
+    "generated_at": "2026-10-02T07:09:26+00:00",
+    "base": "base 2025",
+    "rebase_ratio_previous_base": 1.509487,
+    "previous_base": "base 1998"
+   },
+   "variables": [
+    {
+     "id": "date",
+     "label": "Date",
+     "unit": "date",
+     "description": "Jour calendaire."
+    },
+    {
+     "id": "daily_reference",
+     "label": "Référence quotidienne d'inflation",
+     "unit": "indice",
+     "description": "Base du fichier le plus récent (indice des prix hors tabac). Les valeurs publiées en base antérieure sont converties par le rapport constant calculé sur la période commune."
+    }
+   ]
+  },
+  {
+   "id": "coefficients_indexation",
+   "title": "Coefficients d'indexation des OATi",
+   "files": {
+    "json": "coefficients_indexation.json",
+    "csv": "coefficients_indexation.csv"
+   },
+   "meta": {
+    "dataset": "coefficients_indexation",
+    "title": "Coefficients d'indexation des OATi",
+    "source_file": "2026-09_coef_oati-novembre26.xls ; coef_oati_histo_1998_2016.xls",
+    "first_observation": "1998-07-25",
+    "last_observation": "2026-11-01",
+    "record_count": 10327,
+    "generated_at": "2026-10-02T07:09:26+00:00",
+    "securities": [
+     {
+      "id": "btani_0-45_20160725",
+      "type": "BTANi",
+      "coupon": 0.0045,
+      "maturity_date": "2016-07-25",
+      "reference_date": "2010-07-25",
+      "base_index": 120.00839,
+      "base_index_label": "base 1998",
+      "base_index_current_base": 79.50279,
+      "first_coefficient_date": "2010-07-25",
+      "last_coefficient_date": "2016-03-01",
+      "isin": "FR0119105791",
+      "source_file": "coef_oati_histo_1998_2016.xls"
+     },
+     {
+      "id": "oati_1_20170725",
+      "type": "OATi",
+      "coupon": 0.01,
+      "maturity_date": "2017-07-25",
+      "reference_date": "2005-07-25",
+      "base_index": 111.17742,
+      "base_index_label": "base 1998",
+      "base_index_current_base": 73.65248,
+      "first_coefficient_date": "2005-07-25",
+      "last_coefficient_date": "2016-03-01",
+      "isin": "FR0010235176",
+      "source_file": "coef_oati_histo_1998_2016.xls"
+     },
+     {
+      "id": "oati_1-3_20190725",
+      "type": "OATi",
+      "coupon": 0.013,
+      "maturity_date": "2019-07-25",
+      "reference_date": "2009-07-25",
+      "base_index": 118.13935,
+      "base_index_label": "base 1998",
+      "base_index_current_base": 78.26459,
+      "first_coefficient_date": "2009-07-25",
+      "last_coefficient_date": "2016-03-01",
+      "isin": "FR0010850032",
+      "source_file": "coef_oati_histo_1998_2016.xls"
+     },
+     {
+      "id": "oati_0-1_20210725",
+      "type": "OATi",
+      "coupon": 0.001,
+      "maturity_date": "2021-07-25",
+      "reference_date": "2012-07-25",
+      "base_index": 124.74581,
+      "base_index_label": "base 1998",
+      "base_index_current_base": 82.64122,
+      "first_coefficient_date": "2012-07-25",
+      "last_coefficient_date": "2016-03-01",
+      "isin": "FR0011347046",
+      "source_file": "coef_oati_histo_1998_2016.xls"
+     },
+     {
+      "id": "oati_2-1_20230725",
+      "type": "OATi",
+      "coupon": 0.021,
+      "maturity_date": "2023-07-25",
+      "reference_date": "2007-07-25",
+      "base_index": 114.68452,
+      "base_index_label": "base 1998",
+      "base_index_current_base": 75.97585,
+      "first_coefficient_date": "2007-07-25",
+      "last_coefficient_date": "2016-03-01",
+      "isin": "FR0010585901",
+      "source_file": "coef_oati_histo_1998_2016.xls"
+     },
+     {
+      "id": "oati_0-1_20250301",
+      "type": "OATi",
+      "coupon": 0.001,
+      "maturity_date": "2025-03-01",
+      "reference_date": "2014-03-01",
+      "base_index": 125.82,
+      "base_index_label": "base 1998",
+      "base_index_current_base": 83.35285,
+      "first_coefficient_date": "2014-03-01",
+      "last_coefficient_date": "2016-03-01",
+      "isin": "FR0012558310",
+      "source_file": "coef_oati_histo_1998_2016.xls"
+     },
+     {
+      "id": "oati_0-1_20280301",
+      "type": "OATi",
+      "coupon": 0.001,
+      "maturity_date": "2028-03-01",
+      "reference_date": "2016-03-01",
+      "base_index": 83.49197,
+      "base_index_label": "base 2025",
+      "base_index_current_base": 83.49197,
+      "first_coefficient_date": "2016-03-01",
+      "last_coefficient_date": "2026-11-01",
+      "isin": "FR0013238268",
+      "source_file": "2026-09_coef_oati-novembre26.xls"
+     },
+     {
+      "id": "oati_3-4_20290725",
+      "type": "OATi",
+      "coupon": 0.034,
+      "maturity_date": "2029-07-25",
+      "reference_date": "1999-07-25",
+      "base_index": 66.64518,
+      "base_index_label": "base 2025",
+      "base_index_current_base": 66.64518,
+      "first_coefficient_date": "1999-07-25",
+      "last_coefficient_date": "2026-11-01",
+      "isin": "FR0000186413",
+      "source_file": "2026-09_coef_oati-novembre26.xls"
+     },
+     {
+      "id": "oati_0-1_20320301",
+      "type": "OATi",
+      "coupon": 0.001,
+      "maturity_date": "2032-03-01",
+      "reference_date": "2021-03-01",
+      "base_index": 86.87204,
+      "base_index_label": "base 2025",
+      "base_index_current_base": 86.87204,
+      "first_coefficient_date": "2021-03-01",
+      "last_coefficient_date": "2026-11-01",
+      "isin": "FR0014003N51",
+      "source_file": "2026-09_coef_oati-novembre26.xls"
+     },
+     {
+      "id": "oati_0-1_20360301",
+      "type": "OATi",
+      "coupon": 0.001,
+      "maturity_date": "2036-03-01",
+      "reference_date": "2020-03-01",
+      "base_index": 87.12242,
+      "base_index_label": "base 2025",
+      "base_index_current_base": 87.12242,
+      "first_coefficient_date": "2020-03-01",
+      "last_coefficient_date": "2026-11-01",
+      "isin": "FR0013524014",
+      "source_file": "2026-09_coef_oati-novembre26.xls"
+     },
+     {
+      "id": "oati_0-55_20390301",
+      "type": "OATi",
+      "coupon": 0.0055,
+      "maturity_date": "2039-03-01",
+      "reference_date": "2023-03-01",
+      "base_index": 94.65873,
+      "base_index_label": "base 2025",
+      "base_index_current_base": 94.65873,
+      "first_coefficient_date": "2023-03-01",
+      "last_coefficient_date": "2026-11-01",
+      "isin": "FR001400IKW5",
+      "source_file": "2026-09_coef_oati-novembre26.xls"
+     }
+    ],
+    "base": "base 2025",
+    "rebase_ratio_previous_base": 1.509487,
+    "previous_base": "base 1998"
+   },
+   "variables": [
+    {
+     "id": "date",
+     "label": "Date",
+     "unit": "date",
+     "description": "Jour calendaire."
+    },
+    {
+     "id": "daily_reference",
+     "label": "Référence quotidienne d'inflation",
+     "unit": "indice",
+     "description": "Base du fichier le plus récent."
+    },
+    {
+     "id": "<identifiant du titre>",
+     "label": "Coefficient d'indexation du titre",
+     "unit": "",
+     "description": "Un champ par titre, nommé type_coupon_échéance. Vide avant la date de référence et après l'échéance. Valeurs publiées, jamais converties."
+    }
+   ]
+  }
+ ]
+}
