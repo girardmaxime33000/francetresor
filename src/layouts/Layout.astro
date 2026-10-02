@@ -22,9 +22,12 @@ interface Props {
   home?: boolean;
 }
 const { title, description, crumbs = [], jsonLd, noindex = false, home = false } = Astro.props;
-const path = Astro.url.pathname;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const rawPath = Astro.url.pathname;
+// Chemin sans le sous-chemin de publication, pour repérer la rubrique courante.
+const path = baseUrl && rawPath.startsWith(baseUrl) ? rawPath.slice(baseUrl.length) || '/' : rawPath;
 const fullTitle = home ? `${SITE_NAME}, ${SITE_TAGLINE.charAt(0).toLowerCase()}${SITE_TAGLINE.slice(1)}` : `${title} | ${SITE_NAME}`;
-const canonical = import.meta.env.SITE && !String(import.meta.env.SITE).includes('localhost') ? new URL(path, import.meta.env.SITE).href : null;
+const canonical = import.meta.env.SITE && !String(import.meta.env.SITE).includes('localhost') ? new URL(rawPath, import.meta.env.SITE).href : null;
 
 const nav = [
   { label: 'Adjudications', href: '/adjudications/' },

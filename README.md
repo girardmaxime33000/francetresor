@@ -23,7 +23,11 @@ npm install
 | `npm run check` | Typage (`astro check`), build, tests du HTML généré, lint Python, tests du pipeline |
 | `make test` | Tests `pytest` du pipeline seuls |
 
-`SITE_URL` (variable d'environnement lue au build) fixe l'adresse publique pour le plan de site XML et les adresses canoniques.
+`SITE_URL` (variable d'environnement lue au build) fixe l'adresse publique pour le plan de site XML et les adresses canoniques. `BASE_PATH` fixe le sous-chemin de publication (par exemple `/francetresor`). Les adresses relatives à la racine sont préfixées au build, y compris dans les feuilles de style.
+
+## Publication sur GitHub Pages
+
+Le workflow `.github/workflows/pages.yml` s'exécute à chaque push sur `main` : il régénère les données, lance `npm run check`, construit le site avec l'adresse et le sous-chemin fournis par GitHub, puis le déploie. Réglage unique : dans les paramètres du dépôt, Pages, source « GitHub Actions ».
 
 ## Pipeline de données
 
