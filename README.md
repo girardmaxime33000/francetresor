@@ -27,7 +27,7 @@ npm install
 
 ## Publication sur GitHub Pages
 
-Le workflow `.github/workflows/pages.yml` s'exécute à chaque push sur `main` : il régénère les données, lance `npm run check`, construit le site avec l'adresse et le sous-chemin fournis par GitHub, puis le déploie. Réglage unique : dans les paramètres du dépôt, Pages, source « GitHub Actions ».
+Le workflow `.github/workflows/pages.yml` s'exécute à chaque push sur `main` (et sur la branche de développement `claude/trusting-shannon-f4y54t`) : il régénère les données, lance `npm run check`, construit le site avec l'adresse et le sous-chemin fournis par GitHub, puis le déploie. Réglage unique : dans les paramètres du dépôt, Pages, source « GitHub Actions ».
 
 ## Pipeline de données
 

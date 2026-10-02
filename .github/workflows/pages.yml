@@ -2,7 +2,7 @@ name: Publication GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/trusting-shannon-f4y54t]
   workflow_dispatch:
 
 permissions:
