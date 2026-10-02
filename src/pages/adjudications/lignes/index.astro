@@ -1,0 +1,37 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHead from '../../../components/PageHead.astro';
+import DataTable from '../../../components/DataTable.astro';
+import { lines } from '../../../lib/data';
+import { LINES_COLUMNS, type TableConfig } from '../../../lib/columns';
+import { fmtDateLong, fmtInt } from '../../../lib/format';
+
+const d = lines();
+const rows = d.records;
+const first = rows.map((r) => r.first_operation).sort()[0]!;
+const last = rows.map((r) => r.last_operation).sort().at(-1)!;
+const families = [...new Set(rows.map((r) => r.instrument_family))];
+const cfg: TableConfig = {
+  id: 'lignes',
+  caption: 'Lignes obligataires, volumes cumulés en millions d’euros',
+  columns: LINES_COLUMNS,
+  filters: [{ id: 'family', label: 'Famille', field: 'instrument_family', kind: 'value', options: families.map((f) => ({ value: f, label: f })) }],
+  pageSize: 25,
+  csvName: 'lignes-obligataires',
+  sort: { key: 'last_operation', dir: 'desc' },
+  thenBy: 'isin',
+};
+const chapeau = `Cette page liste les ${fmtInt(rows.length)} lignes obligataires ayant fait l’objet d’une adjudication ou d’une syndication entre le ${fmtDateLong(first)} et le ${fmtDateLong(last)}. Chaque ligne, identifiée par son code ISIN, dispose d’une fiche.`;
+---
+
+<Layout
+  title="Fiches par ligne"
+  description={`${fmtInt(rows.length)} lignes obligataires\u00A0: caractéristiques, historique des adjudications et des syndications, volumes cumulés. Source : Agence France Trésor.`}
+  crumbs={[{ label: 'Adjudications', href: '/adjudications/' }, { label: 'Fiches par ligne' }]}
+>
+  <PageHead title="Fiches par ligne" chapeau={chapeau} />
+  <section class="section" aria-labelledby="liste">
+    <h2 id="liste">Lignes</h2>
+    <DataTable cfg={cfg} rows={rows as unknown as Record<string, unknown>[]} inline />
+  </section>
+</Layout>

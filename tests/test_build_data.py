@@ -206,4 +206,6 @@ def test_full_build(tmp_path):
     raw_csv = (out / "adjudications_oat.csv").read_bytes()
     assert raw_csv.startswith(b"\xef\xbb\xbf")
     assert b";" in raw_csv.splitlines()[0]
+    coef = json.loads((out / "coefficients_indexation.json").read_text(encoding="utf-8"))
+    assert len(coef["columns"]["date"]) == coef["meta"]["record_count"]
     assert (tmp_path / "report.md").read_text(encoding="utf-8").startswith("# Rapport de validation")

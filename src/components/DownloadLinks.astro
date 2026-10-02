@@ -1,0 +1,17 @@
+---
+import { catalog } from '../lib/data';
+import { fmtDateLong, fmtInt } from '../lib/format';
+
+interface Props {
+  dataset: string;
+  label?: string;
+}
+const { dataset, label } = Astro.props;
+const entry = catalog().datasets.find((d) => d.id === dataset)!;
+---
+
+<p>
+  {label ?? entry.title}&nbsp;: <a href={`/data/${entry.files.csv}`} download>CSV</a>, <a href={`/data/${entry.files.json}`} download>JSON</a>.{' '}
+  {fmtInt(entry.meta.record_count)} enregistrements, dernière observation le {fmtDateLong(entry.meta.last_observation)}.{' '}
+  <a href="/donnees/#dictionnaire">Dictionnaire des variables</a>.
+</p>

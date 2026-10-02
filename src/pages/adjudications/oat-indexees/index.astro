@@ -1,0 +1,65 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHead from '../../../components/PageHead.astro';
+import DataTable from '../../../components/DataTable.astro';
+import Chart from '../../../components/Chart.astro';
+import DownloadLinks from '../../../components/DownloadLinks.astro';
+import { oat } from '../../../lib/data';
+import { IDX_COLUMNS, type TableConfig } from '../../../lib/columns';
+import { fmtDateLong, fmtInt } from '../../../lib/format';
+import { datasetLd } from '../../../lib/seo';
+import { sum } from '../../../lib/aggregate';
+
+const all = oat();
+const rows = all.records.filter((r) => r.auction_type === 'adju_I');
+const first = rows[0]!.auction_date;
+const last = rows.at(-1)!.auction_date;
+const nFrance = rows.filter((r) => r.index_type === 'inflation_france').length;
+const nEuro = rows.filter((r) => r.index_type === 'inflation_zone_euro').length;
+const cfg: TableConfig = {
+  id: 'idx',
+  caption: 'Résultats des adjudications de titres indexés, montants en millions d’euros',
+  columns: IDX_COLUMNS,
+  filters: [
+    { id: 'year', label: 'Année', field: 'auction_date', kind: 'year' },
+    { id: 'family', label: 'Famille', field: 'instrument_family', kind: 'value' },
+  ],
+  pageSize: 25,
+  csvName: 'adjudications-indexees',
+  sort: { key: 'auction_date', dir: 'desc' },
+  thenBy: 'isin',
+  dataset: 'adjudications_oat',
+  where: { field: 'auction_type', in: ['adju_I'] },
+};
+const title = 'OAT indexées';
+const chapeau = `Cette page recense les ${fmtInt(rows.length)} résultats d’adjudications de titres indexés sur l’inflation réalisées entre le ${fmtDateLong(first)} et le ${fmtDateLong(last)}. Elle distingue ${fmtInt(nFrance)} résultats pour les titres indexés sur l’inflation française (OATi, BTANi) et ${fmtInt(nEuro)} pour les titres indexés sur l’inflation de la zone euro (OAT€i, BTAN€i).`;
+const served = sum(rows.map((r) => r.amount_served));
+---
+
+<Layout
+  title={title}
+  description={`${fmtInt(rows.length)} résultats d’adjudications de titres indexés du ${fmtDateLong(first)} au ${fmtDateLong(last)}\u00A0: OATi, OAT€i, rendement réel et ratio de couverture. Source\u00A0: Agence France Trésor.`}
+  crumbs={[{ label: 'Adjudications', href: '/adjudications/' }, { label: title }]}
+  jsonLd={datasetLd(all.meta, { name: 'Adjudications de titres indexés sur l’inflation', description: chapeau, path: '/adjudications/oat-indexees/', files: ['adjudications_oat.csv', 'adjudications_oat.json'] })}
+>
+  <PageHead title={title} chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="resultats">
+    <h2 id="resultats">Résultats d’adjudications</h2>
+    <p>Pour ces titres, le taux moyen pondéré est un rendement réel. Le coefficient d’indexation est celui de la date de règlement. Volume adjugé cumulé sur la période&nbsp;: {fmtInt(served)}&nbsp;M€.</p>
+    <DataTable cfg={cfg} rows={rows as unknown as Record<string, unknown>[]} csvHref="/data/adjudications_oat.csv" />
+  </section>
+
+  <section class="section" aria-labelledby="graphiques">
+    <h2 id="graphiques">Graphiques</h2>
+    <Chart kind="idx-volumes" dataset="adjudications_oat" title="Les volumes adjugés annuels de titres indexés selon l’indice de référence" unit="Millions d’euros, par année d’adjudication" lastObservation={all.meta.last_observation} legend />
+    <Chart kind="idx-yield" dataset="adjudications_oat" title="Le rendement réel moyen pondéré annuel des titres indexés" unit="Pourcentage, pondéré par le volume adjugé" lastObservation={all.meta.last_observation} />
+    <Chart kind="idx-cover" dataset="adjudications_oat" title="Le ratio de couverture annuel des adjudications de titres indexés" unit="Volume des soumissions rapporté au volume adjugé, par année" lastObservation={all.meta.last_observation} />
+  </section>
+
+  <section class="section" aria-labelledby="telechargement">
+    <h2 id="telechargement">Téléchargement</h2>
+    <DownloadLinks dataset="adjudications_oat" label="Adjudications d’OAT, dont titres indexés (type adju_I)" />
+    <p><a href="/methodologie/#regroupements">Règles de regroupement et de calcul</a></p>
+  </section>
+</Layout>

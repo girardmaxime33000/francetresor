@@ -1,0 +1,32 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { btf, lines, oat } from '../../lib/data';
+import { fmtDateLong, fmtInt } from '../../lib/format';
+
+const o = oat().meta;
+const b = btf().meta;
+const n = lines().records.length;
+const first = [o.first_observation, b.first_observation].sort()[0]!;
+const last = [o.last_observation, b.last_observation].sort().at(-1)!;
+const items = [
+  { href: '/adjudications/oat-moyen-long-terme/', title: 'OAT moyen et long terme', text: `${fmtInt(o.record_count)} résultats d’adjudications du ${fmtDateLong(o.first_observation)} au ${fmtDateLong(o.last_observation)}, avec volumes annuels, taux par maturité résiduelle et ratio de couverture.` },
+  { href: '/adjudications/oat-indexees/', title: 'OAT indexées', text: 'Adjudications de titres indexés sur l’inflation, avec distinction entre OATi et OAT€i et rendement réel moyen pondéré.' },
+  { href: '/adjudications/btf/', title: 'BTF', text: `${fmtInt(b.record_count)} résultats d’adjudications du ${fmtDateLong(b.first_observation)} au ${fmtDateLong(b.last_observation)}, avec taux par segment de durée et volumes mensuels.` },
+  { href: '/adjudications/lignes/', title: 'Fiches par ligne', text: `${fmtInt(n)} fiches reprenant les caractéristiques, l’historique des adjudications et des syndications et les volumes cumulés de chaque ligne.` },
+];
+---
+
+<Layout
+  title="Adjudications"
+  description={`Résultats d’adjudications d’OAT et de BTF du ${fmtDateLong(first)} au ${fmtDateLong(last)}. Source\u00A0: Agence France Trésor.`}
+  crumbs={[{ label: 'Adjudications' }]}
+>
+  <PageHead
+    title="Adjudications"
+    chapeau={`Cette rubrique regroupe les résultats d’adjudications d’OAT et de BTF réalisées entre le ${fmtDateLong(first)} et le ${fmtDateLong(last)}. Elle comprend ${fmtInt(o.record_count)} résultats pour les OAT et ${fmtInt(b.record_count)} pour les BTF.`}
+  />
+  <ul class="link-list">
+    {items.map((x) => <li><a href={x.href}>{x.title}</a><p>{x.text}</p></li>)}
+  </ul>
+</Layout>

@@ -1,0 +1,105 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHead from '../../../components/PageHead.astro';
+import DataTable from '../../../components/DataTable.astro';
+import { oat, synd } from '../../../lib/data';
+import { LINE_OPS_COLUMNS, type TableConfig } from '../../../lib/columns';
+import { sum } from '../../../lib/aggregate';
+import { fmtAmount, fmtDateLong, fmtInt, fmtPct, plural } from '../../../lib/format';
+import { AUCTION_TYPES, SYND_TYPES } from '../../../lib/labels';
+
+export function getStaticPaths() {
+  const isins = [...new Set([...oat().records.map((r) => r.isin), ...synd().records.map((r) => r.isin)])];
+  return isins.map((isin) => ({ params: { isin } }));
+}
+
+const { isin } = Astro.params;
+const a = oat().records.filter((r) => r.isin === isin);
+const s = synd().records.filter((r) => r.isin === isin);
+const ref = a.at(-1) ?? s.at(-1)!;
+const emissions = s.filter((r) => r.operation === 'emission');
+const buybacks = s.filter((r) => r.operation === 'rachat');
+
+const ops = [
+  ...a.map((r) => ({
+    date: r.auction_date,
+    channel: `Adjudication, ${AUCTION_TYPES[r.auction_type]?.toLowerCase()}`,
+    volume: r.total_issued,
+    bid_to_cover: r.bid_to_cover,
+    rate: r.weighted_rate,
+    price: r.weighted_price,
+    index_ratio: r.index_ratio,
+  })),
+  ...s.map((r) => ({
+    date: r.settlement_date,
+    channel: r.operation === 'rachat' ? `Syndication, rachat` : `Syndication, ${SYND_TYPES[r.syndication_type]?.toLowerCase()}`,
+    volume: r.amount,
+    bid_to_cover: null,
+    rate: r.weighted_rate,
+    price: r.weighted_price,
+    index_ratio: r.index_ratio,
+  })),
+].sort((x, y) => y.date.localeCompare(x.date));
+
+const dates = ops.map((o) => o.date).sort();
+const firstOp = dates[0]!;
+const lastOp = dates.at(-1)!;
+const byAuction = sum(a.map((r) => r.total_issued));
+const bySynd = sum(emissions.map((r) => r.amount));
+const bought = sum(buybacks.map((r) => r.amount));
+const cfg: TableConfig = {
+  id: 'ops',
+  caption: `Adjudications et syndications sur la ligne ${ref.line_label}, montants en millions d’euros`,
+  columns: LINE_OPS_COLUMNS,
+  filters: [],
+  pageSize: 15,
+  csvName: `ligne-${isin}`,
+  sort: { key: 'date', dir: 'desc' },
+};
+const indexed = /i$/.test(ref.instrument_family);
+const title = ref.line_label;
+const chapeau = `Cette fiche présente la ligne ${ref.line_label} (code ISIN ${isin}). Elle recense ${fmtInt(a.length)} ${plural(a.length, 'adjudication', 'adjudications')} et ${fmtInt(s.length)} ${plural(s.length, 'syndication', 'syndications')} entre le ${fmtDateLong(firstOp)} et le ${fmtDateLong(lastOp)}.`;
+---
+
+<Layout
+  title={`${title}, fiche de ligne`}
+  description={`Ligne ${ref.line_label} (${isin}) : ${fmtInt(a.length)} ${plural(a.length, 'adjudication', 'adjudications')}, ${fmtInt(s.length)} ${plural(s.length, 'syndication', 'syndications')}, volume cumulé émis. Source : Agence France Trésor.`}
+  crumbs={[{ label: 'Adjudications', href: '/adjudications/' }, { label: 'Fiches par ligne', href: '/adjudications/lignes/' }, { label: title }]}
+>
+  <PageHead title={title} chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="caracteristiques">
+    <h2 id="caracteristiques">Caractéristiques</h2>
+    <dl class="facts">
+      <dt>Code ISIN</dt>
+      <dd>{isin}</dd>
+      <dt>Famille d’instrument</dt>
+      <dd>{ref.instrument_family}</dd>
+      <dt>{indexed ? 'Coupon réel' : 'Coupon'}</dt>
+      <dd>{ref.coupon === null ? 'sans objet' : fmtPct(ref.coupon, 3)}</dd>
+      <dt>Date d’échéance</dt>
+      <dd>{fmtDateLong(ref.maturity_date)}</dd>
+      <dt>Première opération</dt>
+      <dd>{fmtDateLong(firstOp)}</dd>
+      <dt>Dernière opération</dt>
+      <dd>{fmtDateLong(lastOp)}</dd>
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="volumes">
+    <h2 id="volumes">Volume cumulé émis</h2>
+    <dl class="facts">
+      <dt>Par adjudication</dt>
+      <dd>{fmtAmount(byAuction)} ({fmtInt(a.length)} {plural(a.length, 'adjudication', 'adjudications')}, ONC comprises)</dd>
+      <dt>Par syndication</dt>
+      <dd>{fmtAmount(bySynd)} ({fmtInt(emissions.length)} {plural(emissions.length, 'émission', 'émissions')})</dd>
+      {buybacks.length > 0 && (<><dt>Rachats</dt><dd>{fmtAmount(bought)} ({fmtInt(buybacks.length)} {plural(buybacks.length, 'rachat', 'rachats')}), exclus des volumes émis</dd></>)}
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="historique">
+    <h2 id="historique">Historique des opérations</h2>
+    <p>Le volume des adjudications est le volume total émis, ONC comprises. Pour les titres indexés, le taux est un rendement réel.</p>
+    <DataTable cfg={cfg} rows={ops as unknown as Record<string, unknown>[]} inline />
+  </section>
+</Layout>

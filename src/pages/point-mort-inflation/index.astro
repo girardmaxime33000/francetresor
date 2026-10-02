@@ -1,0 +1,84 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import Chart from '../../components/Chart.astro';
+import DownloadLinks from '../../components/DownloadLinks.astro';
+import { breakeven } from '../../lib/data';
+import { periodStart, periodStats } from '../../lib/aggregate';
+import { fmtBp, fmtDateLong, fmtInt, frTypo } from '../../lib/format';
+import { datasetLd } from '../../lib/seo';
+
+const d = breakeven();
+const m = d.meta;
+const rows = d.records;
+const last = m.last_observation;
+const periods = [
+  { id: '1', label: '1 an', start: periodStart(last, 1) },
+  { id: '3', label: '3 ans', start: periodStart(last, 3) },
+  { id: 'all', label: 'Depuis l’origine', start: null },
+];
+const stats = periods.map((p) => ({ ...p, s: periodStats(rows, p.start) }));
+const seriesLabel = m.series_label;
+const chapeau = `Cette page présente les ${fmtInt(m.record_count)} observations quotidiennes du point mort d’inflation à 10 ans, du ${fmtDateLong(m.first_observation)} au ${fmtDateLong(m.last_observation)}. La série est exprimée en points de base.`;
+---
+
+<Layout
+  title="Point mort d’inflation"
+  description={`Point mort d’inflation à 10 ans, série quotidienne du ${fmtDateLong(m.first_observation)} au ${fmtDateLong(m.last_observation)}, en points de base. Source : Agence France Trésor.`}
+  crumbs={[{ label: 'Point mort d’inflation' }]}
+  jsonLd={datasetLd(m, { name: 'Point mort d’inflation à 10 ans', description: chapeau, path: '/point-mort-inflation/', files: ['point_mort_inflation.csv', 'point_mort_inflation.json'] })}
+>
+  <PageHead title="Point mort d’inflation à 10 ans" chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="serie">
+    <h2 id="serie">Série quotidienne</h2>
+    <Chart kind="breakeven" dataset="point_mort_inflation" title="Le point mort d’inflation à 10 ans, jour ouvré par jour ouvré" unit="Points de base" lastObservation={last}>
+      <div slot="controls" class="chart-controls" role="group" aria-label="Période affichée">
+        <span class="label">Période</span>
+        <span class="button-group">
+          {periods.map((p) => <button type="button" class="button" data-control="period" data-value={p.id} aria-pressed={p.id === 'all' ? 'true' : 'false'}>{p.label}</button>)}
+        </span>
+      </div>
+    </Chart>
+    <p class="chart-source">Libellé officiel de la série&nbsp;: {frTypo(seriesLabel)}.</p>
+  </section>
+
+  <section class="section" aria-labelledby="statistiques" data-stats>
+    <h2 id="statistiques">Minimum, maximum et moyenne</h2>
+    {stats.map((p) => (
+      <div data-stats-block={p.id}>
+        <h3>{p.label}</h3>
+        <p>Période du {fmtDateLong(p.s.from)} au {fmtDateLong(p.s.to)}, {fmtInt(p.s.count)} observations.</p>
+        <dl class="facts">
+          <dt>Minimum</dt>
+          <dd>{fmtBp(p.s.min.breakeven_bp)}, le {fmtDateLong(p.s.min.date)}</dd>
+          <dt>Maximum</dt>
+          <dd>{fmtBp(p.s.max.breakeven_bp)}, le {fmtDateLong(p.s.max.date)}</dd>
+          <dt>Moyenne</dt>
+          <dd>{fmtBp(p.s.mean)}</dd>
+        </dl>
+      </div>
+    ))}
+  </section>
+
+  <section class="section" aria-labelledby="telechargement">
+    <h2 id="telechargement">Téléchargement</h2>
+    <DownloadLinks dataset="point_mort_inflation" />
+    <p><a href="/methodologie/#point-mort">Définition du point mort d’inflation</a></p>
+  </section>
+</Layout>
+<script>
+  // Affiche le bloc de statistiques de la période choisie.
+  const blocks = document.querySelectorAll<HTMLElement>('[data-stats-block]');
+  blocks.forEach((b) => {
+    b.hidden = b.dataset.statsBlock !== 'all';
+  });
+  const figure = document.querySelector('[data-chart="breakeven"]');
+  figure?.querySelectorAll<HTMLButtonElement>('[data-control="period"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      blocks.forEach((b) => {
+        b.hidden = b.dataset.statsBlock !== btn.dataset.value;
+      });
+    });
+  });
+</script>

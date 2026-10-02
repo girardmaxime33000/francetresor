@@ -1,0 +1,58 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHead from '../../../components/PageHead.astro';
+import DataTable from '../../../components/DataTable.astro';
+import Chart from '../../../components/Chart.astro';
+import DownloadLinks from '../../../components/DownloadLinks.astro';
+import { btf } from '../../../lib/data';
+import { BTF_COLUMNS, type TableConfig } from '../../../lib/columns';
+import { fmtDateLong, fmtInt } from '../../../lib/format';
+import { BTF_SEGMENTS } from '../../../lib/labels';
+import { datasetLd } from '../../../lib/seo';
+
+const d = btf();
+const m = d.meta;
+const cfg: TableConfig = {
+  id: 'btf',
+  caption: 'Résultats des adjudications de BTF, montants en millions d’euros',
+  columns: BTF_COLUMNS,
+  filters: [
+    { id: 'year', label: 'Année', field: 'auction_date', kind: 'year' },
+    { id: 'segment', label: 'Segment', field: 'segment', kind: 'value', options: BTF_SEGMENTS.map((s) => ({ value: s, label: s })) },
+  ],
+  pageSize: 25,
+  csvName: 'adjudications-btf',
+  sort: { key: 'auction_date', dir: 'desc' },
+  thenBy: 'term_weeks',
+  dataset: 'adjudications_btf',
+};
+const title = 'BTF';
+const chapeau = `Cette page recense les ${fmtInt(m.record_count)} résultats d’adjudications de BTF réalisées entre le ${fmtDateLong(m.first_observation)} et le ${fmtDateLong(m.last_observation)}. Les durées, exprimées en semaines, sont regroupées en trois segments de 3, 6 et 12 mois.`;
+---
+
+<Layout
+  title="Adjudications de BTF"
+  description={`${fmtInt(m.record_count)} résultats d’adjudications de BTF du ${fmtDateLong(m.first_observation)} au ${fmtDateLong(m.last_observation)}, taux par segment et volumes mensuels. Source : Agence France Trésor.`}
+  crumbs={[{ label: 'Adjudications', href: '/adjudications/' }, { label: title }]}
+  jsonLd={datasetLd(m, { name: 'Adjudications de BTF', description: chapeau, path: '/adjudications/btf/', files: ['adjudications_btf.csv', 'adjudications_btf.json'] })}
+>
+  <PageHead title="Adjudications de BTF" chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="resultats">
+    <h2 id="resultats">Résultats d’adjudications</h2>
+    <p>Le segment est déduit de la durée à l’émission&nbsp;: 3 mois jusqu’à 15 semaines, 6 mois de 16 à 30 semaines, 12 mois à partir de 31 semaines.</p>
+    <DataTable cfg={cfg} rows={d.records as unknown as Record<string, unknown>[]} csvHref="/data/adjudications_btf.csv" />
+  </section>
+
+  <section class="section" aria-labelledby="graphiques">
+    <h2 id="graphiques">Graphiques</h2>
+    <Chart kind="btf-rates" dataset="adjudications_btf" title="Le taux moyen pondéré des BTF par segment de durée" unit="Pourcentage, par date d’adjudication, pondéré par le volume adjugé" lastObservation={m.last_observation} />
+    <Chart kind="btf-volumes" dataset="adjudications_btf" title="Les volumes adjugés de BTF agrégés par mois" unit="Millions d’euros, somme des adjudications hebdomadaires du mois" lastObservation={m.last_observation} />
+  </section>
+
+  <section class="section" aria-labelledby="telechargement">
+    <h2 id="telechargement">Téléchargement</h2>
+    <DownloadLinks dataset="adjudications_btf" />
+    <p><a href="/methodologie/#regroupements">Règles de regroupement et de calcul</a></p>
+  </section>
+</Layout>

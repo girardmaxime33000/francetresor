@@ -179,22 +179,22 @@ DICTIONARY = {
     ],
     "reference_inflation": [
         ("date", "Date", "date", "Jour calendaire."),
-        ("daily_reference", "Référence quotidienne d'inflation", "indice", "Base du fichier le plus récent (indice des prix hors tabac). Les valeurs publiées en base antérieure sont converties par le rapport constant calculé sur la période commune."),
+        ("daily_reference", "Référence quotidienne d’inflation", "indice", "Base du fichier le plus récent (indice des prix hors tabac). Les valeurs publiées en base antérieure sont converties par le rapport constant calculé sur la période commune."),
     ],
     "coefficients_indexation": [
         ("date", "Date", "date", "Jour calendaire."),
         ("daily_reference", "Référence quotidienne d'inflation", "indice", "Base du fichier le plus récent."),
-        ("<identifiant du titre>", "Coefficient d'indexation du titre", "", "Un champ par titre, nommé type_coupon_échéance. Vide avant la date de référence et après l'échéance. Valeurs publiées, jamais converties."),
+        ("<identifiant du titre>", "Coefficient d'indexation du titre", "", "Un champ par titre, nommé type_coupon_échéance. Vide avant la date de référence et après l'échéance. Valeurs publiées, jamais converties. Le JSON est organisé en colonnes (bloc columns) pour limiter son poids."),
     ],
 }
 
 DATASET_TITLES = {
-    "adjudications_oat": "Adjudications d'OAT moyen et long terme",
+    "adjudications_oat": "Adjudications d’OAT moyen et long terme",
     "adjudications_btf": "Adjudications de BTF",
     "syndications": "Syndications",
-    "point_mort_inflation": "Point mort d'inflation à 10 ans",
-    "reference_inflation": "Référence quotidienne d'inflation",
-    "coefficients_indexation": "Coefficients d'indexation des OATi",
+    "point_mort_inflation": "Point mort d’inflation à 10 ans",
+    "reference_inflation": "Référence quotidienne d’inflation",
+    "coefficients_indexation": "Coefficients d’indexation des OATi",
 }
 
 # ---------------------------------------------------------------------------
@@ -887,7 +887,7 @@ def tidy_integers(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def write_dataset(out_dir: Path, name: str, df: pd.DataFrame, source: str, last_obs_col: str, generated_at: str, extra_meta=None, *, last_obs_override=None):
+def write_dataset(out_dir: Path, name: str, df: pd.DataFrame, source: str, last_obs_col: str, generated_at: str, extra_meta=None, *, last_obs_override=None, columnar=False):
     df = tidy_integers(df)
     last = last_obs_override or pd.Timestamp(df[last_obs_col].max()).strftime("%Y-%m-%d")
     first = pd.Timestamp(df[last_obs_col].min()).strftime("%Y-%m-%d")
@@ -901,7 +901,10 @@ def write_dataset(out_dir: Path, name: str, df: pd.DataFrame, source: str, last_
         "generated_at": generated_at,
     }
     meta.update(extra_meta or {})
-    payload = {"meta": meta, "records": to_records(df)}
+    if columnar:
+        payload = {"meta": meta, "columns": {c: [_py(v) for v in df[c]] for c in df.columns}}
+    else:
+        payload = {"meta": meta, "records": to_records(df)}
     (out_dir / f"{name}.json").write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     df.to_csv(out_dir / f"{name}.csv", sep=";", decimal=",", index=False, encoding="utf-8-sig", date_format="%Y-%m-%d", float_format="%.10g", lineterminator="\r\n")
     return meta
@@ -932,6 +935,7 @@ def build(raw_dir: Path, out_dir: Path, report_path: Path) -> Report:
         metas["coefficients_indexation"] = write_dataset(
             out_dir, "coefficients_indexation", wide, " ; ".join(info["files"]), "date", generated_at,
             {"securities": securities, "base": info["new_base"], "rebase_ratio_previous_base": round(info["ratio"], 6), "previous_base": info["old_base"]},
+            columnar=True,
         )
         write_catalog(out_dir, metas, generated_at)
         write_lines(out_dir, oat, synd, generated_at)
@@ -939,6 +943,14 @@ def build(raw_dir: Path, out_dir: Path, report_path: Path) -> Report:
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report.render(generated_at), encoding="utf-8")
     return report
+
+
+def fr_typo(text: str) -> str:
+    """Typographie française des textes publiés : espace insécable avant « : » et « % »,
+    espace fine insécable avant « ; », « ! » et « ? »."""
+    text = text.replace("'", "\u2019")
+    text = re.sub(r" ([:%])", "\u00a0\\1", text)
+    return re.sub(r" ([;!?])", "\u202f\\1", text)
 
 
 def write_catalog(out_dir: Path, metas: dict[str, dict], generated_at: str):
@@ -950,7 +962,7 @@ def write_catalog(out_dir: Path, metas: dict[str, dict], generated_at: str):
                 "title": DATASET_TITLES[name],
                 "files": {"json": f"{name}.json", "csv": f"{name}.csv"},
                 "meta": meta,
-                "variables": [{"id": i, "label": lab, "unit": unit, "description": desc} for i, lab, unit, desc in DICTIONARY[name]],
+                "variables": [{"id": i, "label": fr_typo(lab), "unit": fr_typo(unit), "description": fr_typo(desc)} for i, lab, unit, desc in DICTIONARY[name]],
             }
             for name, meta in metas.items()
         ],

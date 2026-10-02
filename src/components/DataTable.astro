@@ -1,0 +1,27 @@
+---
+import type { Row } from '../lib/cell';
+import type { TableConfig } from '../lib/columns';
+import { initialState, shellHtml } from '../lib/table';
+
+interface Props {
+  cfg: TableConfig;
+  rows: Row[];
+  /** Intègre les lignes dans la page (petits jeux) au lieu de les charger à la demande. */
+  inline?: boolean;
+  csvHref?: string;
+}
+const { cfg, rows, inline = false, csvHref } = Astro.props;
+const html = shellHtml(cfg, rows, initialState(cfg), import.meta.env.BASE_URL, true);
+const embedded = inline ? JSON.stringify(rows).replace(/</g, '\\u003c') : '';
+---
+
+<div class="table-block" data-table data-config={JSON.stringify(cfg)}>
+  <Fragment set:html={html} />
+  {inline && <script type="application/json" data-rows set:html={embedded} />}
+</div>
+<noscript>
+  <p class="note">Le tri, le filtre et l’export nécessitent JavaScript.{csvHref && <> Les données complètes sont disponibles en <a href={csvHref}>CSV</a>.</>}</p>
+</noscript>
+<script>
+  import '../scripts/table-init';
+</script>

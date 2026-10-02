@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { CONTACT, SITE_NAME } from '../../config';
+---
+
+<Layout title="Accessibilité" description={`Déclaration d’accessibilité du site ${SITE_NAME}\u00A0: niveau visé, état de conformité, limites connues.`} crumbs={[{ label: 'Accessibilité' }]}>
+  <PageHead title="Accessibilité" chapeau={`Le site ${SITE_NAME} vise la conformité au référentiel général d’amélioration de l’accessibilité (RGAA) version 4.1, niveau AA. Cette page indique l’état de cette conformité et les limites connues.`} />
+
+  <section class="section">
+    <h2>État de conformité</h2>
+    <p>La conformité au RGAA 4.1 n’a pas fait l’objet d’un audit externe. Elle est considérée comme non évaluée à ce jour.</p>
+  </section>
+
+  <section class="section">
+    <h2>Dispositions prises</h2>
+    <ul>
+      <li>Contraste d’au moins 4,5 pour 1 pour le texte courant.</li>
+      <li>Navigation complète au clavier, lien d’évitement vers le contenu, focus visible.</li>
+      <li>Tableaux en HTML sémantique, avec légende, en-têtes de colonnes et tri annoncé aux technologies d’assistance.</li>
+      <li>Chaque graphique est accompagné d’un tableau de ses données, accessible par le lien «&#8239;Voir les données&#8239;», et d’une infobulle accessible au clavier avec les flèches gauche et droite.</li>
+      <li>Polices et feuilles de style servies par le site, texte redimensionnable, mise en page adaptée aux petits écrans.</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Limites connues</h2>
+    <ul>
+      <li>Le tri, le filtre, l’export et les graphiques nécessitent JavaScript. Sans JavaScript, la première page des tableaux et les fichiers de la rubrique Données restent disponibles.</li>
+      <li>Les tableaux larges défilent horizontalement dans une zone accessible au clavier.</li>
+      <li>Les libellés de lignes obligataires reprennent la forme de la source, par exemple «&#8239;OAT 3,25% 25 février 2032&#8239;».</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Signaler un défaut d’accessibilité</h2>
+    <p>{CONTACT ? `Un défaut peut être signalé à l’adresse suivante : ${CONTACT}.` : 'Un défaut peut être signalé à l’éditeur du site, dont les coordonnées figurent dans les mentions légales.'}</p>
+    <p><a href="/mentions-legales/">Mentions légales</a></p>
+  </section>
+</Layout>

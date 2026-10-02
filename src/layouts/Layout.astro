@@ -1,0 +1,124 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/layout.css';
+import '../styles/components.css';
+import '../styles/print.css';
+import { DATA_SOURCE, DATA_SOURCE_URL, EDITOR, SITE_NAME, SITE_TAGLINE } from '../config';
+import { lastUpdate } from '../lib/data';
+import { fmtDateLong } from '../lib/format';
+import ExternalIcon from '../components/ExternalIcon.astro';
+
+export interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  title: string;
+  description: string;
+  crumbs?: Crumb[];
+  jsonLd?: object;
+  noindex?: boolean;
+  home?: boolean;
+}
+const { title, description, crumbs = [], jsonLd, noindex = false, home = false } = Astro.props;
+const path = Astro.url.pathname;
+const fullTitle = home ? `${SITE_NAME}, ${SITE_TAGLINE.charAt(0).toLowerCase()}${SITE_TAGLINE.slice(1)}` : `${title} | ${SITE_NAME}`;
+const canonical = import.meta.env.SITE && !String(import.meta.env.SITE).includes('localhost') ? new URL(path, import.meta.env.SITE).href : null;
+
+const nav = [
+  { label: 'Adjudications', href: '/adjudications/' },
+  { label: 'Syndications', href: '/syndications/' },
+  { label: 'Titres indexés', href: '/titres-indexes/' },
+  { label: 'Point mort d’inflation', href: '/point-mort-inflation/' },
+  { label: 'Données', href: '/donnees/' },
+];
+const isCurrent = (href: string) => path === href || path.startsWith(href);
+const updated = fmtDateLong(lastUpdate());
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/source-sans-3-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/source-serif-4-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="generator" content={Astro.generator} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <header class="site-header">
+      <div class="container">
+        <a class="site-name" href="/" aria-label={`${SITE_NAME}, accueil`}>{SITE_NAME}</a>
+        <nav class="main-nav" aria-label="Navigation principale">
+          <ul>
+            {nav.map((n) => (
+              <li>
+                <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenu">
+      <div class="container">
+        {crumbs.length > 0 && (
+          <nav class="breadcrumb" aria-label="Fil d’Ariane">
+            <ol>
+              <li><a href="/">Accueil</a></li>
+              {crumbs.map((c, i) => (
+                <li>{c.href && i < crumbs.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+              ))}
+            </ol>
+          </nav>
+        )}
+        <slot />
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="grid footer-grid">
+          <div class="col-4">
+            <h2>Rubriques</h2>
+            <ul>
+              {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+            </ul>
+          </div>
+          <div class="col-4">
+            <h2>Données</h2>
+            <ul>
+              <li><a href="/donnees/">Catalogue et téléchargements</a></li>
+              <li><a href="/donnees/#dictionnaire">Dictionnaire des variables</a></li>
+              <li><a href="/methodologie/">Méthodologie et glossaire</a></li>
+              <li><a href="/adjudications/lignes/">Fiches par ligne</a></li>
+            </ul>
+          </div>
+          <div class="col-4">
+            <h2>Informations légales</h2>
+            <ul>
+              <li><a href="/mentions-legales/">Mentions légales</a></li>
+              <li><a href="/accessibilite/">Accessibilité</a></li>
+              <li><a href="/plan-du-site/">Plan du site</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="footer-source">
+          Source des données&nbsp;: <a href={DATA_SOURCE_URL} rel="noopener">{DATA_SOURCE}<ExternalIcon /></a>. Dernière mise à jour des données&nbsp;: {updated}.
+          Publication indépendante de {EDITOR}, sans lien avec l’Agence France Trésor.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+---
+import { cellHtml, type Row } from '../lib/cell';
+import type { Col } from '../lib/columns';
+import { esc } from '../lib/format';
+import { isNumeric } from '../lib/cell';
+
+interface Props {
+  caption: string;
+  columns: Col[];
+  rows: Row[];
+}
+const { caption, columns, rows } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const head = columns.map((c) => `<th scope="col"${isNumeric(c) ? ' class="num"' : ''}>${esc(c.label)}</th>`).join('');
+const body = rows.map((r) => `<tr>${columns.map((c) => cellHtml(c, r, base)).join('')}</tr>`).join('');
+---
+
+<div class="table-block">
+  <div class="table-scroll" role="region" aria-label={caption} tabindex="0">
+    <table class="data">
+      <caption>{caption}</caption>
+      <thead><tr set:html={head} /></thead>
+      <tbody set:html={body} />
+    </table>
+  </div>
+</div>

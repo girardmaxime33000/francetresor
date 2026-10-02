@@ -1,0 +1,89 @@
+---
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { breakeven, btf, coefficients, oat, synd } from '../../lib/data';
+import { fmtDateLong, fmtDec, fmtInt, frTypo } from '../../lib/format';
+
+const known = JSON.parse(readFileSync(join(process.cwd(), 'data', 'known_issues.json'), 'utf-8')) as { corrections: unknown[]; tolerated: unknown[] };
+const c = coefficients().meta;
+const bk = breakeven().meta;
+const chapeau = `Cette page définit les termes utilisés sur le site et décrit les règles de regroupement et de calcul appliquées aux ${fmtInt(oat().meta.record_count + btf().meta.record_count + synd().meta.record_count)} opérations et aux séries d’inflation publiées. Les données proviennent de six fichiers de l’Agence France Trésor.`;
+
+const terms = [
+  ['adjudication', 'Adjudication', 'Procédure d’émission par appel d’offres. Les intervenants remettent des offres pour des volumes donnés et l’émetteur retient les offres dans la limite du volume qu’il a décidé de servir.'],
+  ['syndication', 'Syndication', 'Procédure d’émission dans laquelle un syndicat de banques désigné par l’émetteur place le titre auprès des investisseurs. Les volumes négatifs de la source correspondent à des rachats effectués dans le cadre d’opérations d’échange.'],
+  ['onc', 'ONC (offres non compétitives)', 'Souscriptions effectuées après l’adjudication, sans prix proposé, servies au prix moyen pondéré de l’adjudication. Le volume total émis est la somme du volume adjugé et des ONC.'],
+  ['ratio-couverture', 'Ratio de couverture', 'Rapport entre le volume des soumissions et le volume adjugé. Un ratio de 2,5 signifie que les offres représentent deux fois et demie le volume servi.'],
+  ['taux-moyen-pondere', 'Taux moyen pondéré', 'Taux de rendement moyen des offres retenues, pondéré par les montants servis. Pour les titres indexés, il s’agit d’un rendement réel. Il est exprimé en décimal dans les fichiers (0,0392 pour 3,92 %).'],
+  ['prix-moyen-pondere', 'Prix moyen pondéré', 'Prix moyen des offres retenues, exprimé en fraction du nominal (0,9675 pour 96,75 % du pair).'],
+  ['coefficient-indexation', 'Coefficient d’indexation', 'Rapport entre la référence quotidienne d’inflation du jour et l’indice de base du titre, arrondi à cinq décimales. Le principal d’un titre indexé, et donc ses coupons, sont multipliés par ce coefficient.'],
+  ['reference-quotidienne', 'Référence quotidienne d’inflation', 'Valeur de l’indice de prix de référence calculée pour chaque jour calendaire par interpolation entre les indices mensuels. Elle sert de numérateur au coefficient d’indexation.'],
+  ['point-mort', 'Point mort d’inflation', `Écart de rendement entre une obligation nominale et une obligation indexée sur l’inflation de maturité voisine. La série publiée est le point mort à 10 ans, calculé comme l’écart de rendement entre l’OAT 05/36 et l’OATi 03/36. Cet écart intègre aussi des primes de liquidité et de risque et ne se réduit pas à une anticipation d’inflation.`],
+  ['btf', 'BTF', 'Bon du Trésor à taux fixe et à intérêts précomptés. Titre de dette à court terme dont la durée à l’émission ne dépasse pas un an.'],
+  ['btan', 'BTAN', 'Bon du Trésor à intérêts annuels normalisés. Titre à moyen terme présent dans l’historique des adjudications.'],
+  ['oat', 'OAT', 'Obligation assimilable du Trésor. Titre de dette à moyen ou long terme, assimilable à une ligne existante portant le même code ISIN.'],
+  ['oati', 'OATi', 'OAT indexée sur l’inflation française hors tabac. Les BTANi sont des BTAN indexés sur le même indice.'],
+  ['oateuroi', 'OAT€i', 'OAT indexée sur l’inflation de la zone euro hors tabac. Les BTAN€i sont des BTAN indexés sur le même indice. Les coefficients des titres de cette famille ne figurent pas dans les fichiers sources.'],
+  ['maturite-residuelle', 'Maturité résiduelle', 'Durée comprise entre la date d’adjudication et la date d’échéance du titre.'],
+];
+---
+
+<Layout
+  title="Méthodologie et glossaire"
+  description="Définitions des termes de la dette négociable de l’État, règles de regroupement et de calcul du site, avertissement sur le changement de base de l’indice d’inflation."
+  crumbs={[{ label: 'Méthodologie et glossaire' }]}
+>
+  <PageHead title="Méthodologie et glossaire" chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="sources">
+    <h2 id="sources">Sources et traitement</h2>
+    <p>Six fichiers de l’Agence France Trésor alimentent le site&nbsp;: les adjudications d’OAT, les adjudications de BTF, les syndications, le point mort d’inflation, les coefficients d’indexation des OATi du fichier courant et ceux du fichier historique. Un programme lit ces fichiers, contrôle leur schéma et leur cohérence, puis écrit les jeux normalisés de la rubrique Données.</p>
+    <p>Les contrôles portent sur l’ordre et le libellé des colonnes, les doublons, la cohérence entre ratio de couverture, soumissions et volume adjugé, le volume total émis, les bornes du volume offert et l’ordre des dates. Une anomalie non documentée interrompt la mise à jour.</p>
+    <p>Les anomalies de la source sont consignées dans un rapport de validation produit à chaque mise à jour. {fmtInt(known.corrections.length)} codes ISIN mal formés ont été corrigés à partir d’autres opérations de la même ligne. {fmtInt(known.tolerated.length)} autres anomalies, telles que des codes ISIN absents ou des volumes incohérents, sont publiées sans modification.</p>
+  </section>
+
+  <section class="section" aria-labelledby="regroupements" id="regroupements">
+    <h2 id="regroupements-titre">Règles de regroupement et de calcul</h2>
+    <h3>Lignes obligataires</h3>
+    <p>La famille d’instrument (OAT, OATi, OAT€i, BTAN, BTANi, BTAN€i, OAT TEC 10), le coupon et la date d’échéance sont déduits du libellé de la ligne. Les libellés dont le coupon est écrit avec un point décimal sont normalisés avec une virgule. Les OAT TEC 10 n’ont pas de coupon.</p>
+    <h3>Maturité résiduelle et tranches</h3>
+    <p>La maturité résiduelle à l’adjudication est la différence entre la date d’échéance et la date d’adjudication, divisée par 365,25. Le graphique des taux de la page OAT moyen et long terme retient les titres nominaux (OAT et BTAN) dont le taux est renseigné et dont la maturité résiduelle atteint au moins 2 ans. Les tranches sont 2 ans inclus à 7 ans exclus, 7 ans inclus à 15 ans exclus, et 15 ans et plus.</p>
+    <h3>Segments des BTF</h3>
+    <p>La durée à l’émission, exprimée en semaines, varie d’une adjudication à l’autre. Elle est regroupée en trois segments&nbsp;: 3 mois pour 15 semaines ou moins, 6 mois de 16 à 30 semaines, 12 mois pour 31 semaines ou plus. Le taux par segment et par date est la moyenne des taux moyens pondérés, pondérée par le volume adjugé.</p>
+    <h3>Volumes et ratios annuels</h3>
+    <p>Les volumes annuels sont rattachés à l’année de la date d’adjudication, ou de la date de règlement pour les syndications. Les volumes adjugés excluent les ONC. Le ratio de couverture annuel est le rapport entre la somme des soumissions et la somme des volumes adjugés de l’année, et non la moyenne des ratios de chaque adjudication. Le ratio du bandeau de l’accueil est calculé de la même façon pour la dernière date d’adjudication.</p>
+    <h3>Titres indexés</h3>
+    <p>Les titres indexés regroupent les adjudications de type adju_I. Les OATi et les BTANi sont rattachés à l’indice français, les OAT€i et les BTAN€i à l’indice de la zone euro. Le rendement réel annuel est la moyenne des taux moyens pondérés de l’année, pondérée par le volume adjugé.</p>
+    <h3>Syndications</h3>
+    <p>Les volumes négatifs sont des rachats. Ils sont affichés dans les tableaux et exclus des totaux d’émission brute.</p>
+    <h3>Point mort d’inflation</h3>
+    <p>Les périodes de 1 an et de 3 ans se comptent à rebours depuis la dernière observation de la série. La variation sur un mois du bandeau de l’accueil est la différence, en points de base, avec la dernière observation à une date égale ou antérieure à un mois avant la dernière observation.</p>
+  </section>
+
+  <section class="section" aria-labelledby="changement-base" id="changement-base">
+    <h2 id="changement-base-titre">Changement de base de la référence d’inflation</h2>
+    <div class="note alert">
+      <p>
+        La référence quotidienne d’inflation n’a pas la même base dans les deux fichiers de coefficients&nbsp;: {c.previous_base} dans le fichier historique, {c.base} dans le fichier courant. Le rapport entre l’ancienne et la nouvelle référence est calculé sur les jours communs aux deux fichiers&nbsp;: il vaut {fmtDec(c.rebase_ratio_previous_base, 6)} et reste constant sur toute la période commune.
+      </p>
+      <p>
+        Le site publie la série de référence dans la base du fichier courant. Les valeurs antérieures sont converties par ce rapport. Les coefficients d’indexation ne sont jamais convertis, car ils sont invariants au changement de base. Pour chaque titre et chaque jour, le coefficient publié est vérifié par rapport à la référence du jour divisée par l’indice de base, arrondie à cinq décimales, avec une tolérance de 0,00001.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="glossaire" id="glossaire">
+    <h2 id="glossaire-titre">Glossaire</h2>
+    <dl class="glossary">
+      {terms.map(([id, term, def]) => (
+        <>
+          <dt id={id}>{term}</dt>
+          <dd>{def}</dd>
+        </>
+      ))}
+    </dl>
+    <p>Série du point mort d’inflation&nbsp;: {frTypo(bk.series_label)}, du {fmtDateLong(bk.first_observation)} au {fmtDateLong(bk.last_observation)}.</p>
+  </section>
+</Layout>

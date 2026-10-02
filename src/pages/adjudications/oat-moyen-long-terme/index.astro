@@ -1,0 +1,65 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHead from '../../../components/PageHead.astro';
+import DataTable from '../../../components/DataTable.astro';
+import Chart from '../../../components/Chart.astro';
+import DownloadLinks from '../../../components/DownloadLinks.astro';
+import { oat } from '../../../lib/data';
+import { OAT_COLUMNS, type TableConfig } from '../../../lib/columns';
+import { fmtDateLong, fmtInt } from '../../../lib/format';
+import { AUCTION_TYPES } from '../../../lib/labels';
+import { datasetLd } from '../../../lib/seo';
+
+const d = oat();
+const m = d.meta;
+const cfg: TableConfig = {
+  id: 'oat',
+  caption: 'Résultats des adjudications d’OAT, montants en millions d’euros',
+  columns: OAT_COLUMNS,
+  filters: [
+    { id: 'year', label: 'Année', field: 'auction_date', kind: 'year' },
+    { id: 'type', label: 'Type d’adjudication', field: 'auction_type', kind: 'value', options: Object.entries(AUCTION_TYPES).map(([value, label]) => ({ value, label })) },
+  ],
+  pageSize: 25,
+  csvName: 'adjudications-oat',
+  sort: { key: 'auction_date', dir: 'desc' },
+  thenBy: 'isin',
+  dataset: 'adjudications_oat',
+};
+const title = 'OAT moyen et long terme';
+const chapeau = `Cette page recense les ${fmtInt(m.record_count)} résultats d’adjudications d’OAT réalisées entre le ${fmtDateLong(m.first_observation)} et le ${fmtDateLong(m.last_observation)}. Elle regroupe les titres à moyen terme, à long terme et indexés, ainsi que les BTAN et les OAT TEC 10 présents dans la source.`;
+---
+
+<Layout
+  title={title}
+  description={`${fmtInt(m.record_count)} résultats d’adjudications d’OAT du ${fmtDateLong(m.first_observation)} au ${fmtDateLong(m.last_observation)}\u00A0: volumes, taux, prix, ratio de couverture. Source\u00A0: Agence France Trésor.`}
+  crumbs={[{ label: 'Adjudications', href: '/adjudications/' }, { label: title }]}
+  jsonLd={datasetLd(m, { name: 'Adjudications d’OAT moyen et long terme', description: chapeau, path: '/adjudications/oat-moyen-long-terme/', files: ['adjudications_oat.csv', 'adjudications_oat.json'] })}
+>
+  <PageHead title={title} chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="resultats">
+    <h2 id="resultats">Résultats d’adjudications</h2>
+    <p>Chaque ligne correspond à une ligne obligataire adjugée à une date donnée. Le libellé de la ligne ouvre la fiche du titre.</p>
+    <DataTable cfg={cfg} rows={d.records as unknown as Record<string, unknown>[]} csvHref="/data/adjudications_oat.csv" />
+  </section>
+
+  <section class="section" aria-labelledby="graphiques">
+    <h2 id="graphiques">Graphiques</h2>
+    <Chart kind="oat-volumes" dataset="adjudications_oat" title="Les volumes adjugés annuels par type d’adjudication" unit="Millions d’euros, par année d’adjudication" lastObservation={m.last_observation} legend />
+    <Chart
+      kind="oat-rates"
+      dataset="adjudications_oat"
+      title="Le taux moyen pondéré de chaque adjudication selon la maturité résiduelle du titre"
+      unit="Pourcentage, titres nominaux (OAT et BTAN) de maturité résiduelle d’au moins 2 ans"
+      lastObservation={m.last_observation}
+    />
+    <Chart kind="oat-cover" dataset="adjudications_oat" title="Le ratio de couverture annuel de l’ensemble des adjudications" unit="Volume des soumissions rapporté au volume adjugé, par année" lastObservation={m.last_observation} />
+  </section>
+
+  <section class="section" aria-labelledby="telechargement">
+    <h2 id="telechargement">Téléchargement</h2>
+    <DownloadLinks dataset="adjudications_oat" />
+    <p><a href="/methodologie/#regroupements">Règles de regroupement et de calcul</a></p>
+  </section>
+</Layout>

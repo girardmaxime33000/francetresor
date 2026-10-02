@@ -1,0 +1,64 @@
+@media print {
+  @page {
+    margin: 1.6cm;
+  }
+  html {
+    font-size: 11pt;
+  }
+  body {
+    color: #000;
+  }
+  .site-header,
+  .main-nav,
+  .skip-link,
+  .breadcrumb,
+  .table-controls,
+  .table-footer .pager,
+  .chart-controls,
+  .button,
+  .site-footer .footer-grid {
+    display: none !important;
+  }
+  .site-footer {
+    background: none;
+    border-top: 1px solid #000;
+    padding-top: 0.5cm;
+  }
+  main {
+    padding: 0;
+  }
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+  a[href^='/']::after,
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+  .table-scroll {
+    overflow: visible;
+  }
+  table.data thead th {
+    position: static;
+    background: none;
+    border-bottom: 1.5px solid #000;
+  }
+  table.data tr,
+  table.data td,
+  table.data th {
+    break-inside: avoid;
+  }
+  table.data thead {
+    display: table-header-group;
+  }
+  .chart,
+  .stat-band,
+  figure {
+    break-inside: avoid;
+  }
+  .chart details:not([open]) {
+    display: none;
+  }
+}

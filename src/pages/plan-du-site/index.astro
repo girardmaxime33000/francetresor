@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { SITE_NAME } from '../../config';
+
+const groups = [
+  { title: 'Accueil', links: [{ href: '/', label: 'Financement de l’État par les marchés' }] },
+  {
+    title: 'Adjudications',
+    links: [
+      { href: '/adjudications/', label: 'Adjudications' },
+      { href: '/adjudications/oat-moyen-long-terme/', label: 'OAT moyen et long terme' },
+      { href: '/adjudications/oat-indexees/', label: 'OAT indexées' },
+      { href: '/adjudications/btf/', label: 'BTF' },
+      { href: '/adjudications/lignes/', label: 'Fiches par ligne' },
+    ],
+  },
+  { title: 'Syndications', links: [{ href: '/syndications/', label: 'Syndications' }] },
+  { title: 'Titres indexés', links: [{ href: '/titres-indexes/', label: 'Référence d’inflation, coefficients et calculateur' }] },
+  { title: 'Point mort d’inflation', links: [{ href: '/point-mort-inflation/', label: 'Point mort d’inflation à 10 ans' }] },
+  { title: 'Données', links: [{ href: '/donnees/', label: 'Catalogue et téléchargements' }, { href: '/donnees/#dictionnaire', label: 'Dictionnaire des variables' }] },
+  { title: 'Méthodologie', links: [{ href: '/methodologie/', label: 'Méthodologie et glossaire' }] },
+  {
+    title: 'Informations légales',
+    links: [
+      { href: '/mentions-legales/', label: 'Mentions légales' },
+      { href: '/accessibilite/', label: 'Accessibilité' },
+      { href: '/plan-du-site/', label: 'Plan du site' },
+    ],
+  },
+];
+---
+
+<Layout title="Plan du site" description={`Plan du site ${SITE_NAME}\u00A0: toutes les rubriques et pages d’information.`} crumbs={[{ label: 'Plan du site' }]}>
+  <PageHead title="Plan du site" chapeau="Cette page liste les rubriques du site. Les fiches de chaque ligne obligataire sont accessibles depuis la page Fiches par ligne." />
+  {groups.map((g) => (
+    <section class="section">
+      <h2>{g.title}</h2>
+      <ul>
+        {g.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </section>
+  ))}
+</Layout>

@@ -1,0 +1,95 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHead from '../components/PageHead.astro';
+import StaticTable from '../components/StaticTable.astro';
+import { breakevenLatest, lastBtfAuction, lastOatAuction } from '../lib/aggregate';
+import { breakeven, btf, lastUpdate, lines, oat, synd } from '../lib/data';
+import { HOME_COLUMNS } from '../lib/columns';
+import { fmtAmount, fmtDateLong, fmtPct, fmtRatio, fmtSignedBp, fmtBp, fmtInt, plural } from '../lib/format';
+import { recentOperations } from '../lib/home';
+import { SYND_TYPES } from '../lib/labels';
+
+const o = oat();
+const b = btf();
+const s = synd();
+const bk = breakeven();
+
+const lastOat = lastOatAuction(o.records);
+const lastBtf = lastBtfAuction(b.records);
+const be = breakevenLatest(bk.records);
+const lastSynd = s.records.reduce((m, r) => (r.settlement_date >= m.settlement_date ? r : m));
+const ops = recentOperations(o.records, b.records, s.records);
+const first = [o.meta.first_observation, b.meta.first_observation, s.meta.first_observation].sort()[0]!;
+const last = lastUpdate();
+const shownLines = lastOat.lines.slice(0, 4);
+const more = lastOat.lines.length - shownLines.length;
+const nLines = lines().records.length;
+
+const sections = [
+  { href: '/adjudications/', title: 'Adjudications', text: `${fmtInt(o.meta.record_count)} résultats d’adjudications d’OAT et ${fmtInt(b.meta.record_count)} résultats d’adjudications de BTF, avec une fiche pour chacune des ${fmtInt(nLines)} lignes.` },
+  { href: '/syndications/', title: 'Syndications', text: `${fmtInt(s.meta.record_count)} opérations de syndication, dont les rachats effectués dans le cadre d’opérations d’échange.` },
+  { href: '/titres-indexes/', title: 'Titres indexés', text: 'Référence quotidienne d’inflation, coefficients d’indexation des OATi et calculateur de coefficient.' },
+  { href: '/point-mort-inflation/', title: 'Point mort d’inflation', text: `Série quotidienne à 10 ans, ${fmtInt(bk.meta.record_count)} observations depuis le ${fmtDateLong(bk.meta.first_observation)}.` },
+  { href: '/donnees/', title: 'Données', text: 'Jeux normalisés en CSV et en JSON, dictionnaire des variables et dates de mise à jour.' },
+  { href: '/methodologie/', title: 'Méthodologie et glossaire', text: 'Définitions, règles de regroupement et de calcul, avertissement sur le changement de base de l’indice.' },
+];
+---
+
+<Layout
+  home
+  title="Accueil"
+  description={`Résultats d’adjudications d’OAT et de BTF, syndications, titres indexés et point mort d’inflation, du ${fmtDateLong(first)} au ${fmtDateLong(last)}. Source\u00A0: Agence France Trésor.`}
+>
+  <PageHead
+    title="Financement de l’État par les marchés"
+    chapeau={`Ce site diffuse les résultats d’adjudications d’OAT et de BTF, les syndications, les coefficients d’indexation des OATi et le point mort d’inflation à 10 ans. Les données couvrent la période du ${fmtDateLong(first)} au ${fmtDateLong(last)}.`}
+  />
+
+  <section aria-label="Dernières observations">
+    <div class="stat-band">
+      <div class="stat">
+        <h2>Dernière adjudication d’OAT</h2>
+        <p class="stat-value">{fmtAmount(lastOat.served)}</p>
+        <p class="stat-date">{fmtDateLong(lastOat.date)}</p>
+        <p class="stat-context">
+          Ratio de couverture moyen pondéré&nbsp;: {fmtRatio(lastOat.cover)}. {lastOat.lines.length} {plural(lastOat.lines.length, 'ligne', 'lignes')}&nbsp;: {shownLines.join('\u202F; ')}{more > 0 ? ` et ${more} ${plural(more, 'autre', 'autres')}` : ''}.
+        </p>
+      </div>
+      <div class="stat">
+        <h2>Dernière adjudication de BTF</h2>
+        <ul class="stat-rates">
+          {[...lastBtf.rates].map(([seg, r]) => <li><span>{seg}</span><strong>{r === null ? 'sans objet' : fmtPct(r)}</strong></li>)}
+        </ul>
+        <p class="stat-date">{fmtDateLong(lastBtf.date)}</p>
+        <p class="stat-context">Taux moyen pondéré par segment de durée.</p>
+      </div>
+      <div class="stat">
+        <h2>Point mort d’inflation à 10 ans</h2>
+        <p class="stat-value">{fmtBp(be.last.breakeven_bp)}</p>
+        <p class="stat-date">{fmtDateLong(be.last.date)}</p>
+        <p class={be.change !== null && be.change < 0 ? 'stat-context negative' : 'stat-context'}>
+          Variation sur un mois&nbsp;: {fmtSignedBp(be.change)}.
+        </p>
+      </div>
+      <div class="stat">
+        <h2>Dernière syndication</h2>
+        <p class="stat-value">{fmtAmount(lastSynd.amount)}</p>
+        <p class="stat-date">{fmtDateLong(lastSynd.settlement_date)}</p>
+        <p class="stat-context">{lastSynd.line_label}. Type&nbsp;: {SYND_TYPES[lastSynd.syndication_type]?.toLowerCase()}. Taux moyen pondéré&nbsp;: {fmtPct(lastSynd.weighted_rate)}.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Dix dernières opérations</h2>
+    <p>Adjudications d’OAT et de BTF, syndications et rachats, classés par date décroissante. Le volume est le volume adjugé ou émis.</p>
+    <StaticTable caption="Dix dernières opérations, toutes catégories" columns={HOME_COLUMNS} rows={ops} />
+  </section>
+
+  <section class="section">
+    <h2>Rubriques</h2>
+    <ul class="link-list">
+      {sections.map((x) => <li><a href={x.href}>{x.title}</a><p>{x.text}</p></li>)}
+    </ul>
+  </section>
+</Layout>

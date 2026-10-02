@@ -1,34 +1,34 @@
 {
- "generated_at": "2026-10-02T07:09:26+00:00",
+ "generated_at": "2026-10-02T07:30:49+00:00",
  "datasets": [
   {
    "id": "adjudications_oat",
-   "title": "Adjudications d'OAT moyen et long terme",
+   "title": "Adjudications d’OAT moyen et long terme",
    "files": {
     "json": "adjudications_oat.json",
     "csv": "adjudications_oat.csv"
    },
    "meta": {
     "dataset": "adjudications_oat",
-    "title": "Adjudications d'OAT moyen et long terme",
+    "title": "Adjudications d’OAT moyen et long terme",
     "source_file": "2026-10_hist_mlt.xlsx",
     "first_observation": "1999-01-07",
     "last_observation": "2026-09-17",
     "record_count": 2308,
-    "generated_at": "2026-10-02T07:09:26+00:00"
+    "generated_at": "2026-10-02T07:30:49+00:00"
    },
    "variables": [
     {
      "id": "auction_type",
-     "label": "Type d'adjudication",
+     "label": "Type d’adjudication",
      "unit": "",
      "description": "adju_LT (long terme), adju_MT (moyen terme), adju_I (indexées), adju_MLT (moyen et long terme)."
     },
     {
      "id": "auction_date",
-     "label": "Date d'adjudication",
+     "label": "Date d’adjudication",
      "unit": "date",
-     "description": "Date de l'adjudication."
+     "description": "Date de l’adjudication."
     },
     {
      "id": "settlement_date",
@@ -70,7 +70,7 @@
      "id": "amount_served",
      "label": "Volume adjugé",
      "unit": "M€",
-     "description": "Montant adjugé lors de l'adjudication."
+     "description": "Montant adjugé lors de l’adjudication."
     },
     {
      "id": "bid_to_cover",
@@ -82,7 +82,7 @@
      "id": "nct_amount",
      "label": "ONC après adjudication",
      "unit": "M€",
-     "description": "Offres non compétitives servies après l'adjudication."
+     "description": "Offres non compétitives servies après l’adjudication."
     },
     {
      "id": "total_issued",
@@ -94,25 +94,25 @@
      "id": "weighted_rate",
      "label": "Taux moyen pondéré",
      "unit": "décimal",
-     "description": "Rendement moyen pondéré (0,0392 pour 3,92 %). Rendement réel pour les titres indexés. Absent pour les OAT TEC 10."
+     "description": "Rendement moyen pondéré (0,0392 pour 3,92 %). Rendement réel pour les titres indexés. Absent pour les OAT TEC 10."
     },
     {
      "id": "weighted_price",
      "label": "Prix moyen pondéré",
      "unit": "fraction du nominal",
-     "description": "0,9675 pour 96,75 % du pair."
+     "description": "0,9675 pour 96,75 % du pair."
     },
     {
      "id": "index_ratio",
-     "label": "Coefficient d'indexation",
+     "label": "Coefficient d’indexation",
      "unit": "",
-     "description": "Coefficient d'indexation à la date de règlement. Absent pour les titres nominaux."
+     "description": "Coefficient d’indexation à la date de règlement. Absent pour les titres nominaux."
     },
     {
      "id": "instrument_family",
-     "label": "Famille d'instrument",
+     "label": "Famille d’instrument",
      "unit": "",
-     "description": "Déduit de la ligne : OAT, OATi, OAT€i, BTAN, BTANi, BTAN€i, OAT TEC 10, OAT verte."
+     "description": "Déduit de la ligne : OAT, OATi, OAT€i, BTAN, BTANi, BTAN€i, OAT TEC 10, OAT verte."
     },
     {
      "id": "coupon",
@@ -122,19 +122,19 @@
     },
     {
      "id": "maturity_date",
-     "label": "Date d'échéance",
+     "label": "Date d’échéance",
      "unit": "date",
      "description": "Déduite de la ligne."
     },
     {
      "id": "residual_maturity_years",
-     "label": "Maturité résiduelle à l'adjudication",
+     "label": "Maturité résiduelle à l’adjudication",
      "unit": "années",
-     "description": "(date d'échéance − date d'adjudication) / 365,25."
+     "description": "(date d’échéance − date d’adjudication) / 365,25."
     },
     {
      "id": "index_type",
-     "label": "Indice d'indexation",
+     "label": "Indice d’indexation",
      "unit": "",
      "description": "inflation_france (OATi, BTANi) ou inflation_zone_euro (OAT€i, BTAN€i). Vide pour les titres nominaux."
     },
@@ -160,14 +160,14 @@
     "first_observation": "1999-01-04",
     "last_observation": "2026-09-28",
     "record_count": 4067,
-    "generated_at": "2026-10-02T07:09:26+00:00"
+    "generated_at": "2026-10-02T07:30:49+00:00"
    },
    "variables": [
     {
      "id": "auction_date",
-     "label": "Date d'adjudication",
+     "label": "Date d’adjudication",
      "unit": "date",
-     "description": "Date de l'adjudication."
+     "description": "Date de l’adjudication."
     },
     {
      "id": "settlement_date",
@@ -179,13 +179,13 @@
      "id": "term_weeks",
      "label": "Durée",
      "unit": "semaines",
-     "description": "Durée du BTF à l'émission."
+     "description": "Durée du BTF à l’émission."
     },
     {
      "id": "maturity_date",
-     "label": "Date d'échéance",
+     "label": "Date d’échéance",
      "unit": "date",
-     "description": "Date d'échéance du BTF."
+     "description": "Date d’échéance du BTF."
     },
     {
      "id": "offered_min",
@@ -215,7 +215,7 @@
      "id": "amount_served",
      "label": "Volume adjugé",
      "unit": "M€",
-     "description": "Montant adjugé lors de l'adjudication."
+     "description": "Montant adjugé lors de l’adjudication."
     },
     {
      "id": "bid_to_cover",
@@ -227,7 +227,7 @@
      "id": "nct_amount",
      "label": "ONC après adjudication",
      "unit": "M€",
-     "description": "Offres non compétitives servies après l'adjudication."
+     "description": "Offres non compétitives servies après l’adjudication."
     },
     {
      "id": "total_issued",
@@ -239,7 +239,7 @@
      "id": "weighted_rate",
      "label": "Taux moyen pondéré",
      "unit": "décimal",
-     "description": "Taux moyen pondéré (0,0302 pour 3,02 %)."
+     "description": "Taux moyen pondéré (0,0302 pour 3,02 %)."
     },
     {
      "id": "segment",
@@ -263,7 +263,7 @@
     "first_observation": "1999-10-01",
     "last_observation": "2026-04-21",
     "record_count": 45,
-    "generated_at": "2026-10-02T07:09:26+00:00"
+    "generated_at": "2026-10-02T07:30:49+00:00"
    },
    "variables": [
     {
@@ -280,9 +280,9 @@
     },
     {
      "id": "maturity_year",
-     "label": "Année d'échéance",
+     "label": "Année d’échéance",
      "unit": "année",
-     "description": "Année d'échéance de la ligne."
+     "description": "Année d’échéance de la ligne."
     },
     {
      "id": "isin",
@@ -300,7 +300,7 @@
      "id": "amount",
      "label": "Volume émis ou racheté",
      "unit": "M€",
-     "description": "Positif pour une émission, négatif pour un rachat effectué dans le cadre d'une opération d'échange."
+     "description": "Positif pour une émission, négatif pour un rachat effectué dans le cadre d’une opération d’échange."
     },
     {
      "id": "weighted_rate",
@@ -316,19 +316,19 @@
     },
     {
      "id": "index_ratio",
-     "label": "Coefficient d'indexation",
+     "label": "Coefficient d’indexation",
      "unit": "",
-     "description": "Coefficient d'indexation à la date de règlement. Absent pour les titres nominaux."
+     "description": "Coefficient d’indexation à la date de règlement. Absent pour les titres nominaux."
     },
     {
      "id": "operation",
-     "label": "Nature de l'opération",
+     "label": "Nature de l’opération",
      "unit": "",
      "description": "emission ou rachat, déduite du signe du volume."
     },
     {
      "id": "instrument_family",
-     "label": "Famille d'instrument",
+     "label": "Famille d’instrument",
      "unit": "",
      "description": "Déduit de la ligne."
     },
@@ -340,7 +340,7 @@
     },
     {
      "id": "maturity_date",
-     "label": "Date d'échéance",
+     "label": "Date d’échéance",
      "unit": "date",
      "description": "Déduite de la ligne."
     },
@@ -354,19 +354,19 @@
   },
   {
    "id": "point_mort_inflation",
-   "title": "Point mort d'inflation à 10 ans",
+   "title": "Point mort d’inflation à 10 ans",
    "files": {
     "json": "point_mort_inflation.json",
     "csv": "point_mort_inflation.csv"
    },
    "meta": {
     "dataset": "point_mort_inflation",
-    "title": "Point mort d'inflation à 10 ans",
+    "title": "Point mort d’inflation à 10 ans",
     "source_file": "2026_10_01_point_mort_inflation_oati.xls",
     "first_observation": "2019-03-05",
     "last_observation": "2026-10-01",
     "record_count": 1978,
-    "generated_at": "2026-10-02T07:09:26+00:00",
+    "generated_at": "2026-10-02T07:30:49+00:00",
     "series_label": "Point-mort inflation FR 10 ans (Ecart rendement : OAT 05/36 - OATi 03/36)"
    },
    "variables": [
@@ -374,17 +374,17 @@
      "id": "date",
      "label": "Date",
      "unit": "date",
-     "description": "Jour ouvré d'observation."
+     "description": "Jour ouvré d’observation."
     },
     {
      "id": "breakeven",
-     "label": "Point mort d'inflation à 10 ans",
+     "label": "Point mort d’inflation à 10 ans",
      "unit": "décimal",
      "description": "Écart de rendement OAT 05/36 − OATi 03/36 (0,02024 pour 202,4 pb)."
     },
     {
      "id": "breakeven_bp",
-     "label": "Point mort d'inflation à 10 ans",
+     "label": "Point mort d’inflation à 10 ans",
      "unit": "points de base",
      "description": "Même valeur en points de base."
     }
@@ -392,19 +392,19 @@
   },
   {
    "id": "reference_inflation",
-   "title": "Référence quotidienne d'inflation",
+   "title": "Référence quotidienne d’inflation",
    "files": {
     "json": "reference_inflation.json",
     "csv": "reference_inflation.csv"
    },
    "meta": {
     "dataset": "reference_inflation",
-    "title": "Référence quotidienne d'inflation",
+    "title": "Référence quotidienne d’inflation",
     "source_file": "2026-09_coef_oati-novembre26.xls",
     "first_observation": "1998-07-25",
     "last_observation": "2026-11-01",
     "record_count": 10327,
-    "generated_at": "2026-10-02T07:09:26+00:00",
+    "generated_at": "2026-10-02T07:30:49+00:00",
     "base": "base 2025",
     "rebase_ratio_previous_base": 1.509487,
     "previous_base": "base 1998"
@@ -418,7 +418,7 @@
     },
     {
      "id": "daily_reference",
-     "label": "Référence quotidienne d'inflation",
+     "label": "Référence quotidienne d’inflation",
      "unit": "indice",
      "description": "Base du fichier le plus récent (indice des prix hors tabac). Les valeurs publiées en base antérieure sont converties par le rapport constant calculé sur la période commune."
     }
@@ -426,19 +426,19 @@
   },
   {
    "id": "coefficients_indexation",
-   "title": "Coefficients d'indexation des OATi",
+   "title": "Coefficients d’indexation des OATi",
    "files": {
     "json": "coefficients_indexation.json",
     "csv": "coefficients_indexation.csv"
    },
    "meta": {
     "dataset": "coefficients_indexation",
-    "title": "Coefficients d'indexation des OATi",
+    "title": "Coefficients d’indexation des OATi",
     "source_file": "2026-09_coef_oati-novembre26.xls ; coef_oati_histo_1998_2016.xls",
     "first_observation": "1998-07-25",
     "last_observation": "2026-11-01",
     "record_count": 10327,
-    "generated_at": "2026-10-02T07:09:26+00:00",
+    "generated_at": "2026-10-02T07:30:49+00:00",
     "securities": [
      {
       "id": "btani_0-45_20160725",
@@ -608,15 +608,15 @@
     },
     {
      "id": "daily_reference",
-     "label": "Référence quotidienne d'inflation",
+     "label": "Référence quotidienne d’inflation",
      "unit": "indice",
      "description": "Base du fichier le plus récent."
     },
     {
      "id": "<identifiant du titre>",
-     "label": "Coefficient d'indexation du titre",
+     "label": "Coefficient d’indexation du titre",
      "unit": "",
-     "description": "Un champ par titre, nommé type_coupon_échéance. Vide avant la date de référence et après l'échéance. Valeurs publiées, jamais converties."
+     "description": "Un champ par titre, nommé type_coupon_échéance. Vide avant la date de référence et après l’échéance. Valeurs publiées, jamais converties. Le JSON est organisé en colonnes (bloc columns) pour limiter son poids."
     }
    ]
   }

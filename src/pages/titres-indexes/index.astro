@@ -1,0 +1,103 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import Chart from '../../components/Chart.astro';
+import StaticTable from '../../components/StaticTable.astro';
+import DownloadLinks from '../../components/DownloadLinks.astro';
+import { coefficients, lastUpdate, reference } from '../../lib/data';
+import { fmtDateLong, fmtDec, fmtInt, fmtMonthYear } from '../../lib/format';
+import { resultHtml, securityLabel } from '../../lib/indexation';
+import type { Col } from '../../lib/columns';
+import { datasetLd } from '../../lib/seo';
+
+const coef = coefficients();
+const ref = reference();
+const secs = coef.meta.securities;
+const m = coef.meta;
+// Date par défaut : dernière observation de marché ; titre par défaut : dernier titre couvert à cette date.
+const defaultDate = lastUpdate();
+const def = [...secs].reverse().find((s) => s.first_coefficient_date <= defaultDate && s.last_coefficient_date >= defaultDate) ?? secs[0]!;
+const initial = resultHtml({ file: coef, security: def, date: defaultDate });
+
+const rows = secs.map((s) => ({
+  label: securityLabel(s),
+  isin: s.isin,
+  coupon: s.coupon,
+  reference_date: s.reference_date,
+  maturity_date: s.maturity_date,
+  base_index: s.base_index,
+  base_label: s.base_index_label,
+  last: s.last_coefficient_date,
+  href: s.isin ? `/adjudications/lignes/${s.isin}/` : null,
+}));
+const columns: Col[] = [
+  { key: 'label', label: 'Titre', kind: 'text', href: '{href}', rowHeader: true },
+  { key: 'coupon', label: 'Coupon réel', kind: 'rate' },
+  { key: 'reference_date', label: 'Date de référence', kind: 'date' },
+  { key: 'maturity_date', label: 'Échéance', kind: 'date' },
+  { key: 'base_index', label: 'Indice de base publié', kind: 'coef' },
+  { key: 'base_label', label: 'Base de l’indice', kind: 'text' },
+  { key: 'last', label: 'Dernier coefficient publié', kind: 'date' },
+];
+const chapeau = `Cette page présente la référence quotidienne d’inflation du ${fmtDateLong(ref.meta.first_observation)} au ${fmtDateLong(ref.meta.last_observation)} et les coefficients d’indexation de ${fmtInt(secs.length)} titres OATi et BTANi. Les valeurs sont exprimées en ${m.base} de l’indice des prix hors tabac.`;
+---
+
+<Layout
+  title="Titres indexés"
+  description={`Référence quotidienne d’inflation depuis ${new Date(ref.meta.first_observation).getUTCFullYear()}, coefficients d’indexation de ${fmtInt(secs.length)} OATi et calculateur de coefficient. Source : Agence France Trésor.`}
+  crumbs={[{ label: 'Titres indexés' }]}
+  jsonLd={datasetLd(m, { name: 'Coefficients d’indexation des OATi', description: chapeau, path: '/titres-indexes/', files: ['coefficients_indexation.csv', 'coefficients_indexation.json', 'reference_inflation.csv', 'reference_inflation.json'] })}
+>
+  <PageHead title="Titres indexés" chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="reference">
+    <h2 id="reference">Référence quotidienne d’inflation</h2>
+    <Chart
+      kind="reference"
+      dataset="reference_inflation"
+      title={`La référence quotidienne d’inflation depuis ${fmtMonthYear(ref.meta.first_observation)}, en ${m.base}`}
+      unit={`Indice, ${m.base}, jour calendaire`}
+      lastObservation={ref.meta.last_observation}
+    />
+    <div class="note alert">
+      <p>
+        Changement de base. La référence quotidienne est publiée en {m.previous_base} dans le fichier historique et en {m.base} dans le fichier courant. L’ensemble de la série est présenté en {m.base}&nbsp;: les valeurs publiées en {m.previous_base} sont converties par le rapport {fmtDec(m.rebase_ratio_previous_base, 6)}, calculé sur les jours communs aux deux fichiers et constant sur toute cette période.
+      </p>
+      <p>Les coefficients d’indexation sont invariants au changement de base. Ils sont publiés tels quels et ne sont jamais convertis.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="titres">
+    <h2 id="titres">Titres couverts</h2>
+    <StaticTable caption="Titres indexés sur l’inflation française couverts par les coefficients d’indexation" columns={columns} rows={rows} />
+    <p>L’indice de base est celui du fichier source dont provient le titre. Pour les titres du fichier historique, il est exprimé en {m.previous_base}.</p>
+  </section>
+
+  <section class="section calculator" aria-labelledby="calculateur" data-calculator>
+    <h2 id="calculateur">Calculateur de coefficient d’indexation</h2>
+    <p>Le coefficient d’indexation d’un titre à une date d est le rapport entre la référence quotidienne d’inflation du jour et l’indice de base du titre, arrondi à cinq décimales&nbsp;: CI(d) = Réf(d) / Réf_base.</p>
+    <form>
+      <div>
+        <label for="calc-title">Titre</label>
+        <select id="calc-title" name="titre">
+          {secs.map((s) => <option value={s.id} selected={s.id === def.id}>{securityLabel(s)}</option>)}
+        </select>
+      </div>
+      <div>
+        <label for="calc-date">Date</label>
+        <input id="calc-date" name="date" type="date" value={defaultDate} />
+      </div>
+    </form>
+    <div class="calc-result" role="status" aria-live="polite" data-result set:html={initial} />
+    <p class="note">Les titres indexés sur l’inflation de la zone euro (OAT€i) ne sont pas proposés&nbsp;: leurs coefficients ne figurent pas dans les fichiers sources.</p>
+  </section>
+
+  <section class="section" aria-labelledby="telechargement">
+    <h2 id="telechargement">Téléchargement</h2>
+    <DownloadLinks dataset="coefficients_indexation" />
+    <DownloadLinks dataset="reference_inflation" />
+  </section>
+</Layout>
+<script>
+  import '../../scripts/calculator';
+</script>

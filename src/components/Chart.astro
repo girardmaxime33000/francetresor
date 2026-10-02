@@ -1,0 +1,35 @@
+---
+import { DATA_SOURCE } from '../config';
+import { fmtDateLong } from '../lib/format';
+
+interface Props {
+  kind: string;
+  dataset: string;
+  title: string;
+  unit: string;
+  lastObservation: string;
+  /** Légende sous le graphique (barres empilées). */
+  legend?: boolean;
+  note?: string;
+}
+const { kind, dataset, title, unit, lastObservation, legend = false, note } = Astro.props;
+---
+
+<figure class="chart" data-chart={kind} data-src={`/data/${dataset}.json`}>
+  <h3>{title}</h3>
+  <p class="chart-unit">{unit}</p>
+  <slot name="controls" />
+  <div class="chart-host"><p class="chart-fallback">Le graphique se charge à l’affichage de cette zone.</p></div>
+  <noscript><p class="chart-fallback">Ce graphique nécessite JavaScript. Les données sont disponibles dans la rubrique Données.</p></noscript>
+  {legend && <ul class="chart-legend" data-legend></ul>}
+  <p class="chart-source">
+    Source&nbsp;: {DATA_SOURCE}. Dernière observation&nbsp;: {fmtDateLong(lastObservation)}.{note ? ` ${note}` : ''}
+  </p>
+  <details>
+    <summary>Voir les données</summary>
+    <div data-chart-table></div>
+  </details>
+</figure>
+<script>
+  import '../scripts/charts';
+</script>

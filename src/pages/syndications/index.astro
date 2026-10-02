@@ -1,0 +1,60 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import DataTable from '../../components/DataTable.astro';
+import Chart from '../../components/Chart.astro';
+import DownloadLinks from '../../components/DownloadLinks.astro';
+import { synd } from '../../lib/data';
+import { SYND_COLUMNS, type TableConfig } from '../../lib/columns';
+import { fmtAmount, fmtDateLong, fmtInt } from '../../lib/format';
+import { SYND_TYPES } from '../../lib/labels';
+import { datasetLd } from '../../lib/seo';
+import { sum } from '../../lib/aggregate';
+
+const d = synd();
+const m = d.meta;
+const buybacks = d.records.filter((r) => r.operation === 'rachat');
+const emissions = d.records.filter((r) => r.operation === 'emission');
+const gross = sum(emissions.map((r) => r.amount));
+const cfg: TableConfig = {
+  id: 'synd',
+  caption: 'Opérations de syndication, montants en millions d’euros',
+  columns: SYND_COLUMNS,
+  filters: [
+    { id: 'year', label: 'Année', field: 'settlement_date', kind: 'year' },
+    { id: 'type', label: 'Type de syndication', field: 'syndication_type', kind: 'value', options: Object.entries(SYND_TYPES).map(([value, label]) => ({ value, label })) },
+  ],
+  pageSize: 15,
+  csvName: 'syndications',
+  sort: { key: 'settlement_date', dir: 'desc' },
+  thenBy: 'isin',
+};
+const chapeau = `Cette page recense les ${fmtInt(m.record_count)} opérations de syndication réalisées entre le ${fmtDateLong(m.first_observation)} et le ${fmtDateLong(m.last_observation)}. Elle comprend ${fmtInt(emissions.length)} émissions pour ${fmtAmount(gross)} au total et ${fmtInt(buybacks.length)} ${buybacks.length > 1 ? 'rachats' : 'rachat'}.`;
+---
+
+<Layout
+  title="Syndications"
+  description={`${fmtInt(m.record_count)} opérations de syndication du ${fmtDateLong(m.first_observation)} au ${fmtDateLong(m.last_observation)} : volumes, taux et prix. Source : Agence France Trésor.`}
+  crumbs={[{ label: 'Syndications' }]}
+  jsonLd={datasetLd(m, { name: 'Syndications d’OAT', description: chapeau, path: '/syndications/', files: ['syndications.csv', 'syndications.json'] })}
+>
+  <PageHead title="Syndications" chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="operations">
+    <h2 id="operations">Opérations</h2>
+    <p>
+      Les volumes négatifs correspondent à des rachats effectués dans le cadre d’opérations d’échange. Ils sont affichés comme tels, en rouge, et exclus des totaux d’émission brute.
+    </p>
+    <DataTable cfg={cfg} rows={d.records as unknown as Record<string, unknown>[]} inline csvHref="/data/syndications.csv" />
+  </section>
+
+  <section class="section" aria-labelledby="graphiques">
+    <h2 id="graphiques">Graphique</h2>
+    <Chart kind="synd-volumes" dataset="syndications" title="Les émissions brutes de syndication par année et par type" unit="Millions d’euros, par année de règlement, rachats exclus" lastObservation={m.last_observation} legend />
+  </section>
+
+  <section class="section" aria-labelledby="telechargement">
+    <h2 id="telechargement">Téléchargement</h2>
+    <DownloadLinks dataset="syndications" />
+  </section>
+</Layout>

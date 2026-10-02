@@ -1,0 +1,78 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import StaticTable from '../../components/StaticTable.astro';
+import { catalog, lastUpdate } from '../../lib/data';
+import type { Col } from '../../lib/columns';
+import { fmtDateLong, fmtDateShort, fmtInt } from '../../lib/format';
+import { DATA_SOURCE } from '../../config';
+
+const cat = catalog();
+const ds = cat.datasets;
+const first = ds.map((d) => d.meta.first_observation).sort()[0]!;
+const descriptions: Record<string, string> = {
+  adjudications_oat: 'Résultats des adjudications d’OAT, de BTAN et d’OAT TEC 10, avec famille, coupon, échéance et maturité résiduelle déduits de la ligne.',
+  adjudications_btf: 'Résultats des adjudications de BTF, avec regroupement de la durée en trois segments.',
+  syndications: 'Opérations de syndication, émissions et rachats, avec famille, coupon et échéance déduits de la ligne.',
+  point_mort_inflation: 'Point mort d’inflation à 10 ans, série quotidienne, en décimal et en points de base.',
+  reference_inflation: 'Référence quotidienne d’inflation, jour calendaire, en base du fichier le plus récent.',
+  coefficients_indexation: 'Coefficients d’indexation quotidiens de chaque titre OATi et BTANi couvert, avec la référence quotidienne du jour.',
+};
+const rows = ds.map((d) => ({
+  title: d.title,
+  description: descriptions[d.id] ?? '',
+  period: `${fmtDateShort(d.meta.first_observation)} au ${fmtDateShort(d.meta.last_observation)}`,
+  count: d.meta.record_count,
+  updated: d.meta.last_observation,
+  source: d.meta.source_file,
+  csv: `/data/${d.files.csv}`,
+  json: `/data/${d.files.json}`,
+}));
+const columns: Col[] = [
+  { key: 'title', label: 'Jeu de données', kind: 'text', rowHeader: true },
+  { key: 'description', label: 'Contenu', kind: 'text' },
+  { key: 'period', label: 'Période', kind: 'text' },
+  { key: 'count', label: 'Enregistrements', kind: 'int' },
+  { key: 'updated', label: 'Dernière observation', kind: 'date' },
+  { key: 'csv_label', label: 'CSV', kind: 'text', href: '{csv}' },
+  { key: 'json_label', label: 'JSON', kind: 'text', href: '{json}' },
+];
+const tableRows = rows.map((r) => ({ ...r, csv_label: 'CSV', json_label: 'JSON' }));
+const dictColumns: Col[] = [
+  { key: 'id', label: 'Identifiant', kind: 'text', rowHeader: true },
+  { key: 'label', label: 'Libellé', kind: 'text' },
+  { key: 'unit', label: 'Unité', kind: 'text' },
+  { key: 'description', label: 'Description', kind: 'text' },
+];
+const chapeau = `Cette page propose le téléchargement des ${fmtInt(ds.length)} jeux de données normalisés utilisés par le site, du ${fmtDateLong(first)} au ${fmtDateLong(lastUpdate())}. Chaque jeu est disponible en CSV et en JSON, avec la date de sa dernière observation.`;
+---
+
+<Layout
+  title="Données"
+  description={`Jeux de données normalisés sur les adjudications d’OAT et de BTF, les syndications, les titres indexés et le point mort d’inflation, en CSV et en JSON. Source : ${DATA_SOURCE}.`}
+  crumbs={[{ label: 'Données' }]}
+>
+  <PageHead title="Données" chapeau={chapeau} />
+
+  <section class="section" aria-labelledby="catalogue">
+    <h2 id="catalogue">Catalogue</h2>
+    <StaticTable caption="Jeux de données disponibles au téléchargement" columns={columns} rows={tableRows} />
+    <h3>Format des fichiers</h3>
+    <ul>
+      <li>CSV&nbsp;: séparateur point-virgule, virgule décimale, encodage UTF-8 avec BOM pour l’ouverture directe dans Excel, dates au format AAAA-MM-JJ.</li>
+      <li>JSON&nbsp;: bloc <code>meta</code> (fichier source, première et dernière observation, nombre d’enregistrements, date de génération) puis bloc <code>records</code>. Le jeu des coefficients d’indexation est organisé en colonnes (bloc <code>columns</code>).</li>
+      <li>Montants en millions d’euros, taux en décimal (0,0392 pour 3,92&nbsp;%), prix en fraction du nominal (0,9675 pour 96,75&nbsp;% du pair).</li>
+    </ul>
+    <p>Les données d’origine sont publiées par l’{DATA_SOURCE}. Les jeux ci-dessus en sont une version normalisée&nbsp;: <a href="/methodologie/">voir la méthodologie</a>.</p>
+  </section>
+
+  <section class="section" aria-labelledby="dictionnaire-titre" id="dictionnaire">
+    <h2 id="dictionnaire-titre">Dictionnaire des variables</h2>
+    {ds.map((d) => (
+      <details class="details-data" open={false}>
+        <summary>{d.title}</summary>
+        <StaticTable caption={`Variables du jeu « ${d.title} »`} columns={dictColumns} rows={d.variables as unknown as Record<string, unknown>[]} />
+      </details>
+    ))}
+  </section>
+</Layout>

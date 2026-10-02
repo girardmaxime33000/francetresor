@@ -1,0 +1,77 @@
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/source-serif-4-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/source-serif-4-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/source-sans-3-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/source-sans-3-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/source-sans-3-latin-400-italic.woff2') format('woff2');
+}
+
+:root {
+  --ink: #1a1a1a;
+  --ink-secondary: #4a4f55;
+  --paper: #ffffff;
+  --paper-alt: #f4f5f6;
+  --rule: #d5d8dc;
+  --accent: #1f3a5f;
+  --accent-strong: #142842;
+  --signal: #9c2f2f;
+
+  --series-1: #1f3a5f;
+  --series-2: #6b8cae;
+  --series-3: #a3a9b0;
+  --series-4: #8c6d3f;
+  --series-5: #4f6f52;
+
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+
+  /* Échelle modulaire de rapport 1,2 sur une base de 17 px */
+  --step--2: 0.694rem;
+  --step--1: 0.833rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.44rem;
+  --step-3: 1.728rem;
+  --step-4: 2.074rem;
+  --step-5: 2.488rem;
+
+  --space-1: 0.35rem;
+  --space-2: 0.7rem;
+  --space-3: 1.05rem;
+  --space-4: 1.6rem;
+  --space-5: 2.4rem;
+  --space-6: 3.6rem;
+
+  --gutter: 24px;
+  --container: 1200px;
+  --measure: 72ch;
+  --radius: 2px;
+}
