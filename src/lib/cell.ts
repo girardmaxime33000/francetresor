@@ -24,6 +24,8 @@ export function cellText(col: Col, row: Row): string {
       return fmtRatio(Number(v));
     case 'coef':
       return fmtCoef(Number(v));
+    case 'dec':
+      return fmtDec(Number(v), 2);
     case 'pctnum':
       return fmtDec(Number(v), 3);
     case 'bp':
@@ -41,7 +43,7 @@ export function isNumeric(col: Col): boolean {
 
 export function isNegative(col: Col, row: Row): boolean {
   const v = rawValue(col, row);
-  return col.kind === 'int' && typeof v === 'number' && v < 0;
+  return (col.kind === 'int' || col.kind === 'dec') && typeof v === 'number' && v < 0;
 }
 
 export function hrefFor(col: Col, row: Row): string | null {

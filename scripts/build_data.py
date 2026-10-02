@@ -18,6 +18,7 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import markets
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -939,6 +940,15 @@ def build(raw_dir: Path, out_dir: Path, report_path: Path) -> Report:
         )
         write_catalog(out_dir, metas, generated_at)
         write_lines(out_dir, oat, synd, generated_at)
+        mk = report.dataset("marches_fictifs")
+        mk.source = "data/markets_state.json"
+        state_path = raw_dir.parent / "markets_state.json"
+        result = markets.update_markets(markets.load_state(state_path), oat, btf, pm)
+        markets.save_state(state_path, result.markets)
+        meta = markets.publish(out_dir, result.markets, generated_at)
+        mk.rows_read = mk.rows_published = len(result.markets)
+        mk.note(f"{result.created} marché(s) ouvert(s) à cette exécution, {result.resolved} marché(s) réglé(s). Total : {meta['open_count']} ouvert(s), {meta['resolved_count']} résolu(s).")
+        mk.note("Cotes initiales : fréquence empirique sur les cinq dernières années. Règlement strict (Oui si la valeur dépasse le seuil).")
 
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report.render(generated_at), encoding="utf-8")

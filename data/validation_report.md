@@ -1,6 +1,6 @@
 # Rapport de validation des données
 
-Généré le 2026-10-02T07:30:49+00:00.
+Généré le 2026-10-02T08:01:48+00:00.
 
 Anomalies bloquantes : 0.
 
@@ -11,6 +11,7 @@ Anomalies bloquantes : 0.
 | syndications | 1999-2026_historique_syndications.xlsx | 45 | 0 | 45 | 0 | 1 |
 | point_mort_inflation | 2026_10_01_point_mort_inflation_oati.xls | 1978 | 0 | 1978 | 0 | 0 |
 | coefficients_indexation | 2026-09_coef_oati-novembre26.xls ; coef_oati_histo_1998_2016.xls | 16757 | 0 | 10327 | 0 | 0 |
+| marches_fictifs | data/markets_state.json | 21 | 0 | 21 | 0 | 0 |
 
 ## adjudications_oat
 
@@ -73,5 +74,14 @@ Source : 2026-09_coef_oati-novembre26.xls ; coef_oati_histo_1998_2016.xls
 - Titre OATi 3.4 % 25/07/2029 présent dans les deux fichiers : 6065 jours communs, écart maximal 0.00000. Le fichier courant est retenu.
 - Écart maximal constaté entre coefficient publié et valeur recalculée, par titre : BTANi 0.45 % 2016 0.00000 ; OATi 1 % 2017 0.00000 ; OATi 1.3 % 2019 0.00000 ; OATi 0.1 % 2021 0.00000 ; OATi 2.1 % 2023 0.00000 ; OATi 0.1 % 2025 0.00000 ; OATi 3.4 % 2029 0.00001 ; OATi 0.1 % 2028 0.00001 ; OATi 0.1 % 2032 0.00001 ; OATi 0.1 % 2036 0.00001 ; OATi 0.55 % 2039 0.00001.
 - 11 titre(s) sur 11 rattaché(s) à un ISIN par (famille, coupon, échéance) dans les adjudications.
+
+Aucune anomalie.
+
+## marches_fictifs
+
+Source : data/markets_state.json
+
+- 0 marché(s) ouvert(s) à cette exécution, 0 marché(s) réglé(s). Total : 21 ouvert(s), 0 résolu(s).
+- Cotes initiales : fréquence empirique sur les cinq dernières années. Règlement strict (Oui si la valeur dépasse le seuil).
 
 Aucune anomalie.

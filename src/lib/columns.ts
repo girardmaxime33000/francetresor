@@ -1,6 +1,6 @@
 import { AUCTION_TYPES, OPERATIONS, SYND_TYPES } from './labels';
 
-export type ColKind = 'date' | 'text' | 'int' | 'rate' | 'price' | 'ratio' | 'coef' | 'bp' | 'pctnum' | 'year';
+export type ColKind = 'date' | 'text' | 'int' | 'rate' | 'price' | 'ratio' | 'coef' | 'bp' | 'pctnum' | 'dec' | 'year';
 
 export interface Col {
   key: string;

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-02T07:30:49+00:00",
+ "generated_at": "2026-10-02T08:01:48+00:00",
  "datasets": [
   {
    "id": "adjudications_oat",
@@ -15,7 +15,7 @@
     "first_observation": "1999-01-07",
     "last_observation": "2026-09-17",
     "record_count": 2308,
-    "generated_at": "2026-10-02T07:30:49+00:00"
+    "generated_at": "2026-10-02T08:01:48+00:00"
    },
    "variables": [
     {
@@ -160,7 +160,7 @@
     "first_observation": "1999-01-04",
     "last_observation": "2026-09-28",
     "record_count": 4067,
-    "generated_at": "2026-10-02T07:30:49+00:00"
+    "generated_at": "2026-10-02T08:01:48+00:00"
    },
    "variables": [
     {
@@ -263,7 +263,7 @@
     "first_observation": "1999-10-01",
     "last_observation": "2026-04-21",
     "record_count": 45,
-    "generated_at": "2026-10-02T07:30:49+00:00"
+    "generated_at": "2026-10-02T08:01:48+00:00"
    },
    "variables": [
     {
@@ -366,7 +366,7 @@
     "first_observation": "2019-03-05",
     "last_observation": "2026-10-01",
     "record_count": 1978,
-    "generated_at": "2026-10-02T07:30:49+00:00",
+    "generated_at": "2026-10-02T08:01:48+00:00",
     "series_label": "Point-mort inflation FR 10 ans (Ecart rendement : OAT 05/36 - OATi 03/36)"
    },
    "variables": [
@@ -404,7 +404,7 @@
     "first_observation": "1998-07-25",
     "last_observation": "2026-11-01",
     "record_count": 10327,
-    "generated_at": "2026-10-02T07:30:49+00:00",
+    "generated_at": "2026-10-02T08:01:48+00:00",
     "base": "base 2025",
     "rebase_ratio_previous_base": 1.509487,
     "previous_base": "base 1998"
@@ -438,7 +438,7 @@
     "first_observation": "1998-07-25",
     "last_observation": "2026-11-01",
     "record_count": 10327,
-    "generated_at": "2026-10-02T07:30:49+00:00",
+    "generated_at": "2026-10-02T08:01:48+00:00",
     "securities": [
      {
       "id": "btani_0-45_20160725",

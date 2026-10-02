@@ -167,3 +167,35 @@ test('pages légales, plan du site, 404, plan XML', () => {
   assert.ok(existsSync(join(DIST, 'sitemap-index.xml')));
   assert.ok(existsSync(join(ROOT, 'public', 'fonts', 'source-sans-3-latin-400-normal.woff2')));
 });
+
+test('marchés fictifs : liste, fiches, portefeuille, règles et avertissement', () => {
+  const index = get('/marches/');
+  assert.match(text(index), /Monnaie fictive : jetons virtuels et illimités/);
+  const rows = index.querySelectorAll('section[aria-labelledby="ouverts"] tbody tr');
+  assert.equal(rows.length, 21);
+  const hrefs = [...index.querySelectorAll('section[aria-labelledby="ouverts"] tbody a')].map((a) => a.getAttribute('href'));
+  assert.equal(new Set(hrefs).size, 21);
+  for (const h of hrefs) {
+    const doc = get(h);
+    assert.ok(doc.querySelector('[data-ticket] form'), `${h} : formulaire de pari`);
+    assert.ok(doc.querySelector('.game-banner'), `${h} : avertissement`);
+    assert.match(text(doc.querySelector('h1')), / \?$/, `${h} : question`);
+    assert.ok(doc.querySelector('#regle'), `${h} : règle de règlement`);
+    assert.equal(doc.querySelectorAll('figure[data-chart]').length, 1, `${h} : graphique`);
+  }
+  assert.match(text(get('/marches/portefeuille/')), /Aucun pari enregistré|Chargement/);
+  assert.ok(get('/marches/portefeuille/').querySelector('[data-export]'));
+  assert.match(text(get('/marches/regles/')), /LMSR/);
+});
+
+test('marchés fictifs : jamais plus de cinq entrées dans la navigation principale, lien dédié', () => {
+  const doc = get('/');
+  assert.equal(doc.querySelectorAll('nav.main-nav li').length, 5);
+  assert.ok(doc.querySelector('nav.nav-games a[href="/marches/"]'));
+});
+
+test('mentions légales : monnaie fictive et stockage local', () => {
+  const t = text(get('/mentions-legales/'));
+  assert.match(t, /jetons sont virtuels et illimités/);
+  assert.match(t, /localStorage/);
+});

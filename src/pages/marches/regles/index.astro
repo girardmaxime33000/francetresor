@@ -1,0 +1,67 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHead from '../../../components/PageHead.astro';
+import GameBanner from '../../../components/GameBanner.astro';
+import { marketsFile } from '../../../lib/marketsData';
+import { LIQUIDITY } from '../../../lib/lmsr';
+import { fmtInt } from '../../../lib/format';
+
+const { meta } = marketsFile();
+---
+
+<Layout
+  title="Règles du jeu des marchés fictifs"
+  description="Règles du jeu, méthode de cotation, règlement et score de Brier des marchés fictifs sur les indicateurs de la dette négociable de l’État. Monnaie virtuelle."
+  crumbs={[{ label: 'Marchés fictifs', href: '/marches/' }, { label: 'Règles du jeu' }]}
+>
+  <PageHead title="Règles du jeu" chapeau={`Cette page décrit le fonctionnement des marchés fictifs\u00A0: nature des jetons, cotation, règlement, score et limites. Le dispositif est un outil pédagogique sur la lecture des probabilités appliquée aux indicateurs de la dette négociable.`} />
+  <GameBanner />
+
+  <section class="section" aria-labelledby="nature">
+    <h2 id="nature">Nature du dispositif</h2>
+    <p>Les marchés fictifs sont un exercice éducatif. Les jetons sont virtuels et illimités. Ils ne s’achètent pas, ne se vendent pas, ne se convertissent en aucune valeur et ne donnent droit à aucun lot, gain ou avantage. Aucun classement n’est établi sur les gains.</p>
+    <p>Le site ne propose aucun produit financier. Les cotes ne sont ni des prévisions de marché ni un conseil en investissement. Cette rubrique est une publication indépendante, sans lien avec l’Agence France Trésor.</p>
+  </section>
+
+  <section class="section" aria-labelledby="marches">
+    <h2 id="marches">Les marchés</h2>
+    <p>Chaque marché pose une question fermée sur un indicateur publié par l’Agence France Trésor. La réponse est Oui si la valeur retenue est strictement supérieure au seuil, Non sinon. Quatre familles de marchés existent&nbsp;:</p>
+    <ul>
+      <li>le point mort d’inflation à 10 ans à une date donnée, en points de base&nbsp;;</li>
+      <li>le taux moyen pondéré des BTF à 3, 6 et 12 mois à la prochaine adjudication&nbsp;;</li>
+      <li>le ratio de couverture de la prochaine adjudication d’OAT à long terme ou à moyen terme&nbsp;;</li>
+      <li>le volume adjugé de la prochaine adjudication d’OAT à long terme ou à moyen terme.</li>
+    </ul>
+    <p>Les marchés sont ouverts à chaque mise à jour des données, à partir de la dernière observation disponible. Le calendrier des adjudications n’étant pas publié dans les fichiers sources, les marchés portent sur « la première adjudication postérieure à la date de référence » et non sur une date annoncée. À ce jour, {fmtInt(meta.record_count)} marchés ont été ouverts, dont {fmtInt(meta.open_count)} sont ouverts et {fmtInt(meta.resolved_count)} résolus.</p>
+  </section>
+
+  <section class="section" aria-labelledby="cotes">
+    <h2 id="cotes">Cote initiale</h2>
+    <p>La cote initiale du Oui est la fréquence empirique de l’événement sur les cinq dernières années de la série. Pour le point mort, elle mesure la part des variations observées sur l’horizon du marché qui dépassent la variation implicite du seuil. Pour les BTF, elle porte sur les variations entre adjudications consécutives du segment. Pour les OAT, elle porte sur les valeurs observées aux dates d’adjudication du même type. Les seuils sont les quartiles de ces distributions, ce qui donne des marchés proches de 25 %, 50 % et 75 %. La cote est bornée entre 3 % et 97 %.</p>
+  </section>
+
+  <section class="section" aria-labelledby="cotation">
+    <h2 id="cotation">Cotation des paris</h2>
+    <p>Chaque pari est exécuté contre un teneur de marché automatique de type LMSR (logarithmic market scoring rule). Avec q<sub>Oui</sub> et q<sub>Non</sub> les parts en circulation et b = {LIQUIDITY} le paramètre de liquidité, la fonction de coût est C(q) = b · ln(e<sup>q<sub>Oui</sub>/b</sup> + e<sup>q<sub>Non</sub>/b</sup>) et la cote du Oui vaut e<sup>q<sub>Oui</sub>/b</sup> / (e<sup>q<sub>Oui</sub>/b</sup> + e<sup>q<sub>Non</sub>/b</sup>).</p>
+    <p>Une mise m achète le nombre de parts s tel que C(q + s) − C(q) = m. Chaque part de l’issue gagnante rapporte un jeton au règlement. Plus la mise est élevée, plus la cote se déplace et plus le prix moyen d’une part augmente.</p>
+    <div class="note">
+      <p>Les cotes sont locales. Ce site n’a pas de serveur de données&nbsp;: la cote affichée sur un marché ne bouge que sous l’effet de vos propres paris et n’agrège les paris d’aucun autre visiteur.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="reglement">
+    <h2 id="reglement">Règlement</h2>
+    <p>Le règlement est automatique et reproductible. Il est calculé à partir des fichiers de la rubrique Données, selon la règle affichée sur chaque marché. Un marché reste ouvert tant que la source ne contient pas l’observation qui le concerne. Les fichiers étant mis à jour à la main, le règlement n’est pas instantané.</p>
+    <p>Un marché réglé ne se rouvre pas. Les anomalies éventuelles de la source sont documentées dans la méthodologie.</p>
+  </section>
+
+  <section class="section" aria-labelledby="score">
+    <h2 id="score">Score de Brier</h2>
+    <p>Lors de chaque pari, vous indiquez votre probabilité que la réponse soit Oui. Le score de Brier d’un marché résolu est le carré de l’écart entre cette probabilité et le résultat (1 pour Oui, 0 pour Non). Un score de 0 est parfait. Une estimation constante de 50 % donne 0,25. Le portefeuille compare votre score moyen à celui de la cote initiale sur les mêmes marchés et présente la calibration de vos estimations par tranche de 20 points.</p>
+  </section>
+
+  <section class="section" aria-labelledby="donnees">
+    <h2 id="donnees">Données personnelles</h2>
+    <p>Les paris sont enregistrés dans le stockage local de votre navigateur, sur votre appareil. Aucune donnée n’est transmise, aucun compte n’est créé, aucun cookie ni traceur n’est utilisé. L’export du portefeuille permet de conserver ou de transférer vos données.</p>
+  </section>
+</Layout>

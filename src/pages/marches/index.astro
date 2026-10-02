@@ -1,0 +1,74 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import GameBanner from '../../components/GameBanner.astro';
+import StaticTable from '../../components/StaticTable.astro';
+import { marketsFile } from '../../lib/marketsData';
+import { INDICATOR_LABELS, formatValue, question, windowLabel } from '../../lib/markets';
+import type { Col } from '../../lib/columns';
+import { fmtDateLong, fmtDateShort, fmtInt, fmtPct, plural } from '../../lib/format';
+
+const { meta, records } = marketsFile();
+const open = records.filter((m) => m.status === 'open').sort((a, b) => a.indicator.localeCompare(b.indicator) || (a.target_date ?? '').localeCompare(b.target_date ?? '') || a.threshold - b.threshold);
+const resolved = records.filter((m) => m.status === 'resolved').sort((a, b) => (b.resolved_date ?? '').localeCompare(a.resolved_date ?? ''));
+
+const openRows = open.map((m) => ({
+  question: question(m),
+  href: `/marches/${m.id}/`,
+  indicator: INDICATOR_LABELS[m.indicator],
+  window: windowLabel(m),
+  last: formatValue(m, m.last_value),
+  p0: fmtPct(m.p0, 0),
+}));
+const resolvedRows = resolved.map((m) => ({
+  question: question(m),
+  href: `/marches/${m.id}/`,
+  outcome: m.outcome ? 'Oui' : 'Non',
+  value: formatValue(m, m.resolved_value ?? 0),
+  date: m.resolved_date,
+  p0: fmtPct(m.p0, 0),
+}));
+const openCols: Col[] = [
+  { key: 'question', label: 'Question', kind: 'text', href: '{href}', rowHeader: true },
+  { key: 'indicator', label: 'Indicateur', kind: 'text' },
+  { key: 'window', label: 'Règlement', kind: 'text' },
+  { key: 'last', label: 'Dernière valeur connue', kind: 'text' },
+  { key: 'p0', label: 'Cote initiale du Oui', kind: 'text' },
+];
+const resolvedCols: Col[] = [
+  { key: 'question', label: 'Question', kind: 'text', href: '{href}', rowHeader: true },
+  { key: 'outcome', label: 'Résultat', kind: 'text' },
+  { key: 'value', label: 'Valeur retenue', kind: 'text' },
+  { key: 'date', label: 'Observation du', kind: 'date' },
+  { key: 'p0', label: 'Cote initiale du Oui', kind: 'text' },
+];
+const chapeau = `Cette rubrique propose ${fmtInt(meta.open_count)} ${plural(meta.open_count, 'marché fictif ouvert', 'marchés fictifs ouverts')} sur les dernières observations disponibles, du ${fmtDateLong(meta.first_observation)} au ${fmtDateLong(meta.last_observation)}. Les jetons sont virtuels et illimités, sans valeur ni conversion possible.`;
+---
+
+<Layout
+  title="Marchés fictifs"
+  description={`Marchés fictifs sur le point mort d’inflation, les taux des BTF et les adjudications d’OAT. Monnaie virtuelle, projet éducatif. Données au ${fmtDateShort(meta.last_observation)}.`}
+  crumbs={[{ label: 'Marchés fictifs' }]}
+>
+  <PageHead title="Marchés fictifs" chapeau={chapeau} />
+  <GameBanner />
+
+  <section class="section" aria-labelledby="ouverts">
+    <h2 id="ouverts">Marchés ouverts</h2>
+    <p>Chaque marché pose une question fermée sur un indicateur publié par l’Agence France Trésor. La cote initiale du Oui est la fréquence observée sur les cinq dernières années. Le règlement est automatique, à partir des fichiers de la rubrique Données.</p>
+    <StaticTable caption="Marchés fictifs ouverts" columns={openCols} rows={openRows} />
+    <div data-positions-hint class="hint" hidden></div>
+  </section>
+
+  <section class="section" aria-labelledby="resolus">
+    <h2 id="resolus">Marchés résolus</h2>
+    {resolvedRows.length > 0
+      ? <StaticTable caption="Marchés fictifs résolus" columns={resolvedCols} rows={resolvedRows} />
+      : <p>Aucun marché n’est résolu à ce jour. Un marché est réglé dès que la source publie l’observation qui le concerne.</p>}
+  </section>
+
+  <section class="section" aria-labelledby="portefeuille">
+    <h2 id="portefeuille">Votre portefeuille</h2>
+    <p>Les paris sont enregistrés dans le navigateur, sur cet appareil uniquement. Le <a href="/marches/portefeuille/">portefeuille</a> présente les positions, les gains nets fictifs et le score de Brier.</p>
+  </section>
+</Layout>

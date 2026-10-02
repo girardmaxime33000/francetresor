@@ -53,11 +53,21 @@ Chaque JSON contient `meta` (jeu, titre, fichier source, première et dernière 
 
 Unités : montants en millions d'euros, taux en décimal, prix en fraction du nominal.
 
+## Marchés fictifs
+
+La rubrique `/marches/` propose des marchés de prédiction à monnaie virtuelle, à visée pédagogique : jetons illimités, sans valeur, non convertibles, sans lot ni classement sur les gains. Les cotes et les paris sont locaux au navigateur (`localStorage`) : aucun serveur, aucun compte, aucune donnée transmise.
+
+- `scripts/markets.py` ouvre des marchés à chaque exécution de `make data` (point mort à 10 ans à 14 et 28 jours, taux des BTF par segment à la prochaine adjudication, ratio de couverture et volume adjugé de la prochaine adjudication d'OAT), calcule la cote initiale (fréquence empirique sur cinq ans), règle les marchés dont l'observation est publiée et écrit `public/data/marches.json`.
+- `data/markets_state.json` conserve les définitions et les règlements : **il doit être versionné après chaque `make data`**, sans quoi les marchés ouverts lors d'une mise à jour précédente seraient perdus.
+- Cotation : teneur de marché LMSR (`src/lib/lmsr.ts`, paramètre de liquidité 250), évaluation par score de Brier et calibration (`src/lib/portfolio.ts`).
+- Dérogations assumées au cahier des charges, limitées à cette rubrique : verbes d'action sur les boutons et formulaires, lien « Marchés fictifs » hors de la navigation principale (qui reste à cinq entrées), avertissement permanent sur chaque page.
+
 ## Mise à jour
 
 1. Déposer les nouveaux fichiers sources dans `data/raw/`.
 2. `make data && npm run build`.
-3. Lire `data/validation_report.md`. Une nouvelle anomalie de source se traite en l'ajoutant, avec son motif, à `data/known_issues.json`.
+3. Versionner `data/markets_state.json` avec les nouvelles données.
+4. Lire `data/validation_report.md`. Une nouvelle anomalie de source se traite en l'ajoutant, avec son motif, à `data/known_issues.json`.
 
 ## Choix de méthode
 

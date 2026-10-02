@@ -1,0 +1,106 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import GameBanner from '../../components/GameBanner.astro';
+import Chart from '../../components/Chart.astro';
+import { marketsFile } from '../../lib/marketsData';
+import { CHART_FOR, INDICATOR_LABELS, formatThreshold, formatValue, question, resolutionRule, windowLabel } from '../../lib/markets';
+import { btf, oat, breakeven } from '../../lib/data';
+import { fmtDateLong, fmtInt, fmtPct } from '../../lib/format';
+
+export function getStaticPaths() {
+  return marketsFile().records.map((m) => ({ params: { id: m.id }, props: { market: m } }));
+}
+const { market: m } = Astro.props;
+const q = question(m);
+const chart = CHART_FOR[m.indicator];
+const lastObs = m.indicator === 'breakeven' ? breakeven().meta.last_observation : m.indicator === 'btf_rate' ? btf().meta.last_observation : oat().meta.last_observation;
+const noPct = fmtPct(1 - m.p0, 0);
+---
+
+<Layout
+  title={q}
+  description={`Marché fictif : ${q} Cote initiale du Oui ${fmtPct(m.p0, 0)}. Monnaie virtuelle, projet éducatif.`}
+  crumbs={[{ label: 'Marchés fictifs', href: '/marches/' }, { label: INDICATOR_LABELS[m.indicator] }]}
+>
+  <PageHead title={q} chapeau={`${windowLabel(m)}. Ce marché porte sur le ${INDICATOR_LABELS[m.indicator].charAt(0).toLowerCase()}${INDICATOR_LABELS[m.indicator].slice(1)}, dont la dernière valeur connue est ${formatValue(m, m.last_value)} au ${fmtDateLong(m.reference_date)}.`} />
+  <GameBanner />
+
+  <div data-market-root data-market={JSON.stringify(m).replace(/</g, '\\u003c')}>
+    {m.status === 'resolved' && (
+      <div class="note">
+        <p><strong>Marché résolu</strong>&nbsp;: {m.outcome ? 'Oui' : 'Non'}. Valeur retenue {formatValue(m, m.resolved_value ?? 0)} (observation du {fmtDateLong(m.resolved_date)}), seuil {formatThreshold(m)}.</p>
+      </div>
+    )}
+
+    <section class="section" aria-labelledby="cotes">
+      <h2 id="cotes">Cotes</h2>
+      <div class="odds" data-odds>
+        <div class="odds-yes"><p class="odds-label">Oui</p><p class="odds-value" data-price-yes>{fmtPct(m.p0, 0)}</p></div>
+        <div class="odds-no"><p class="odds-label">Non</p><p class="odds-value" data-price-no>{noPct}</p></div>
+      </div>
+      <div class="prob-bar" aria-hidden="true"><span data-bar style={`width:${(m.p0 * 100).toFixed(1)}%`}></span></div>
+      <p class="hint" data-odds-note>Cote initiale du Oui&nbsp;: {fmtPct(m.p0, 0)}, calculée sur {fmtInt(m.p0_sample)} observations des cinq dernières années. Votre cote ne bouge que sous l’effet de vos propres paris.</p>
+    </section>
+
+    {m.status === 'open' && (
+      <section class="ticket" aria-labelledby="pari" data-ticket>
+        <h2 id="pari">Parier</h2>
+        <form novalidate>
+          <fieldset>
+            <legend>Issue choisie</legend>
+            <div class="choice">
+              <input type="radio" name="side" id="side-yes" value="yes" checked disabled />
+              <label for="side-yes">Oui</label>
+              <input type="radio" name="side" id="side-no" value="no" disabled />
+              <label for="side-no">Non</label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="stake">Mise en jetons fictifs</label>
+            <input id="stake" name="stake" type="number" min="1" step="any" value="100" inputmode="decimal" disabled />
+            <p class="hint">Les jetons sont illimités. Aucune limite de solde ne s’applique.</p>
+          </div>
+          <div class="field">
+            <label for="estimate">Votre probabilité que la réponse soit Oui, en pourcentage</label>
+            <input id="estimate" name="estimate" type="number" min="1" max="99" step="1" value={Math.round(m.p0 * 100)} inputmode="numeric" disabled />
+            <p class="hint">Cette estimation sert au score de Brier du portefeuille.</p>
+          </div>
+          <dl class="facts" data-preview aria-live="polite"></dl>
+          <button type="submit" class="button" disabled>Parier</button>
+          <p class="ticket-feedback" role="status" aria-live="polite" data-feedback></p>
+        </form>
+        <noscript><p class="note">La saisie d’un pari nécessite JavaScript.</p></noscript>
+      </section>
+    )}
+
+    <section class="section" aria-labelledby="position">
+      <h2 id="position">Votre position</h2>
+      <div data-position><p>Aucun pari enregistré sur ce marché dans ce navigateur.</p></div>
+    </section>
+  </div>
+
+  <section class="section" aria-labelledby="regle">
+    <h2 id="regle">Règle de règlement</h2>
+    <p>{resolutionRule(m)}</p>
+    <dl class="facts">
+      <dt>Indicateur</dt>
+      <dd>{INDICATOR_LABELS[m.indicator]}</dd>
+      <dt>Seuil</dt>
+      <dd>{formatThreshold(m)}</dd>
+      <dt>Dernière valeur connue</dt>
+      <dd>{formatValue(m, m.last_value)} au {fmtDateLong(m.reference_date)}</dd>
+      <dt>Source</dt>
+      <dd>Agence France Trésor, <a href="/donnees/">jeux de la rubrique Données</a></dd>
+    </dl>
+    <p><a href="/marches/regles/">Règles du jeu et méthode de cotation</a></p>
+  </section>
+
+  <section class="section" aria-labelledby="historique">
+    <h2 id="historique">Historique de l’indicateur</h2>
+    <Chart kind={chart.kind} dataset={chart.dataset} title={chart.title} unit={chart.unit} lastObservation={lastObs} legend={chart.kind === 'oat-volumes'} />
+  </section>
+</Layout>
+<script>
+  import '../../scripts/market-ticket';
+</script>

@@ -71,6 +71,9 @@ const updated = fmtDateLong(lastUpdate());
             ))}
           </ul>
         </nav>
+        <nav class="nav-games" aria-label="Jeu pédagogique">
+          <a href="/marches/" aria-current={path.startsWith('/marches/') ? 'page' : undefined}>Marchés fictifs</a>
+        </nav>
       </div>
     </header>
 
@@ -97,6 +100,7 @@ const updated = fmtDateLong(lastUpdate());
             <h2>Rubriques</h2>
             <ul>
               {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+              <li><a href="/marches/">Marchés fictifs</a></li>
             </ul>
           </div>
           <div class="col-4">

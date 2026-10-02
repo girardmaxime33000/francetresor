@@ -1,0 +1,48 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PageHead from '../../../components/PageHead.astro';
+import GameBanner from '../../../components/GameBanner.astro';
+---
+
+<Layout
+  title="Portefeuille fictif"
+  description="Positions, gains nets fictifs, score de Brier et calibration de vos paris sur les marchés fictifs. Données stockées dans votre navigateur."
+  crumbs={[{ label: 'Marchés fictifs', href: '/marches/' }, { label: 'Portefeuille' }]}
+>
+  <PageHead title="Portefeuille fictif" chapeau="Cette page présente les positions prises dans ce navigateur sur les marchés fictifs, leur règlement et la qualité de vos estimations. Les données restent sur votre appareil et ne sont transmises à personne." />
+  <GameBanner />
+
+  <div data-portfolio>
+    <section class="section" aria-labelledby="synthese">
+      <h2 id="synthese">Synthèse</h2>
+      <div data-summary><p>Chargement des marchés.</p></div>
+      <p class="hint">Le score de Brier est la moyenne des carrés des écarts entre votre probabilité du Oui et le résultat (1 pour Oui, 0 pour Non). Plus il est faible, meilleure est l’estimation. Les jetons étant illimités, le gain net ne mesure pas la qualité des estimations.</p>
+    </section>
+
+    <section class="section" aria-labelledby="positions">
+      <h2 id="positions">Positions</h2>
+      <div data-positions></div>
+    </section>
+
+    <section class="section" aria-labelledby="calibration">
+      <h2 id="calibration">Calibration</h2>
+      <div data-calibration></div>
+    </section>
+
+    <section class="section" aria-labelledby="gestion">
+      <h2 id="gestion">Gestion des données</h2>
+      <p>Le portefeuille est enregistré dans le stockage local du navigateur. Vider les données du site l’efface. L’export permet de le conserver ou de le transférer vers un autre appareil.</p>
+      <div class="portfolio-actions">
+        <button type="button" class="button" data-export disabled>Exporter le portefeuille</button>
+        <button type="button" class="button" data-import disabled>Importer un portefeuille</button>
+        <button type="button" class="button" data-reset disabled>Réinitialiser</button>
+        <input type="file" accept="application/json,.json" class="visually-hidden" aria-label="Fichier de portefeuille à importer" tabindex="-1" />
+      </div>
+      <p role="status" aria-live="polite" data-message class="hint"></p>
+    </section>
+  </div>
+  <noscript><p class="note">Le portefeuille nécessite JavaScript.</p></noscript>
+</Layout>
+<script>
+  import '../../../scripts/portfolio';
+</script>

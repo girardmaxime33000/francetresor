@@ -7,6 +7,7 @@ import { breakeven, btf, lastUpdate, lines, oat, synd } from '../lib/data';
 import { HOME_COLUMNS } from '../lib/columns';
 import { fmtAmount, fmtDateLong, fmtPct, fmtRatio, fmtSignedBp, fmtBp, fmtInt, plural } from '../lib/format';
 import { recentOperations } from '../lib/home';
+import { marketsFile } from '../lib/marketsData';
 import { SYND_TYPES } from '../lib/labels';
 
 const o = oat();
@@ -30,6 +31,7 @@ const sections = [
   { href: '/syndications/', title: 'Syndications', text: `${fmtInt(s.meta.record_count)} opérations de syndication, dont les rachats effectués dans le cadre d’opérations d’échange.` },
   { href: '/titres-indexes/', title: 'Titres indexés', text: 'Référence quotidienne d’inflation, coefficients d’indexation des OATi et calculateur de coefficient.' },
   { href: '/point-mort-inflation/', title: 'Point mort d’inflation', text: `Série quotidienne à 10 ans, ${fmtInt(bk.meta.record_count)} observations depuis le ${fmtDateLong(bk.meta.first_observation)}.` },
+  { href: '/marches/', title: 'Marchés fictifs', text: `${fmtInt(marketsFile().meta.open_count)} marchés fictifs ouverts sur les derniers indicateurs. Jetons virtuels et illimités, sans valeur, à visée pédagogique.` },
   { href: '/donnees/', title: 'Données', text: 'Jeux normalisés en CSV et en JSON, dictionnaire des variables et dates de mise à jour.' },
   { href: '/methodologie/', title: 'Méthodologie et glossaire', text: 'Définitions, règles de regroupement et de calcul, avertissement sur le changement de base de l’indice.' },
 ];
